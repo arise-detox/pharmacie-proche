@@ -1,0 +1,829 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e2a20">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Trouvez la pharmacie ouverte la plus proche, appelez-la et lancez l'itinéraire en un geste.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pharmacie">
+<title>Pharmacie proche</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" id="touch-icon" href="icon.svg">
+<style>
+:root{
+  --pine:#0e2a20;--led:#35e68c;--glow:rgba(53,230,140,.55);--amber:#ffb93b;--dim:#2f4b3f;
+  --paper:#f1f5f2;--ink:#12261e;--mut:#566a60;--line:#d3ddd6;--ok:#087a3d;--warn:#8f5200;
+  --lit-sm:#0b9d55;--off-sm:#b7c4bc;--focus:#0a7f43;--alert:#fff1d2;--alert-ink:#3a2700;
+  --serif:ui-serif,"New York","Iowan Old Style",Georgia,serif;
+  --sans:ui-rounded,"SF Pro Rounded",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --pine:#10281f;--paper:#09120e;--ink:#e6f1ea;--mut:#93aa9d;--line:#1d3228;--ok:#4be28f;--warn:#ffc15e;
+  --lit-sm:#35e68c;--off-sm:#2f4b3f;--focus:#35e68c;--alert:#2a2108;--alert-ink:#ffe6b0;
+}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;background:var(--paper)}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.45 var(--sans);font-variant-numeric:tabular-nums;min-height:100vh}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.board :focus-visible{outline-color:var(--led)}
+[hidden]{display:none!important}
+
+/* ---- enseigne (haut de page) ---- */
+.board{background:var(--pine);color:#eaf6ef;padding:calc(env(safe-area-inset-top) + 12px) max(16px,env(safe-area-inset-right)) 22px max(16px,env(safe-area-inset-left));border-bottom:1px solid rgba(255,255,255,.06)}
+.in{max-width:640px;margin:0 auto}
+.sf{position:relative;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:15px;padding:4px 4px 4px 14px}
+.sf:focus-within{outline:2px solid var(--led);outline-offset:2px}
+.sf input{flex:1;min-width:0;height:44px;border:0;outline:0;background:transparent;color:#fff;font:500 17px/1.2 var(--sans);-webkit-appearance:none;appearance:none}
+.sf input::placeholder{color:#9db8aa}
+.sf input::-webkit-search-cancel-button{display:none}
+.locbtn{flex:none;width:44px;height:44px;border:0;border-radius:11px;background:var(--led);color:#05241a;display:grid;place-items:center;cursor:pointer}
+.locbtn svg{width:22px;height:22px}
+.locbtn[aria-busy=true] svg{animation:spin 1s linear infinite}
+.sug{position:absolute;z-index:5;left:0;right:0;top:calc(100% + 6px);margin:0;padding:6px;list-style:none;background:#f4f8f5;color:#12261e;border-radius:14px;box-shadow:0 12px 32px rgba(0,0,0,.35)}
+.sug li{padding:11px 12px;border-radius:9px;font:500 16px/1.25 var(--sans);cursor:pointer}
+.sug li small{display:block;color:#566a60;font-size:13px;font-weight:400}
+.sug li[aria-selected=true],.sug li:hover{background:#dcebe1}
+
+.hero{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin-top:22px;align-items:start}
+.hero .cross{margin-top:4px}
+.hk{margin:0;font:500 14px/1.3 var(--sans);color:#9db8aa}
+.hn{margin:2px 0 6px;font:600 27px/1.12 var(--serif);letter-spacing:-.01em;overflow-wrap:anywhere}
+.hs{margin:0;font:600 18px/1.25 var(--sans)}
+.hs.open{color:var(--led)}.hs.soon,.hs.opening{color:var(--amber)}.hs.closed,.hs.unknown{color:#c9dacf}
+.ha{margin:6px 0 0;display:flex;flex-wrap:wrap;gap:2px 12px;font:15px/1.35 var(--sans);color:#b9cfc2}
+.ha b{font-weight:600;color:#eaf6ef}
+.acts{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.acts.one{grid-template-columns:1fr}
+.act{border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;min-height:58px;padding:8px 12px;border-radius:15px;font:600 18px/1.1 var(--sans);text-decoration:none;text-align:left}
+.act svg{flex:none;width:22px;height:22px}
+.act small{display:block;margin-top:2px;font:500 13px/1.1 var(--sans);opacity:.85}
+.act.p{background:var(--led);color:#05241a}
+.act.s{color:#eaf6ef;box-shadow:inset 0 0 0 1.5px rgba(234,246,239,.55)}
+.lead{margin:0;font:600 24px/1.2 var(--serif)}
+.sub{margin:6px 0 0;font:15px/1.45 var(--sans);color:#b9cfc2;max-width:36em}
+
+/* ---- croix lumineuse ---- */
+.cross{--u:14px;display:inline-grid;grid-template-columns:repeat(3,var(--u));grid-template-rows:repeat(3,var(--u));gap:calc(var(--u)/6);flex:none}
+.cross i{border-radius:calc(var(--u)/5);background:var(--c,var(--dim))}
+.cross i:nth-child(odd):not(:nth-child(5)){visibility:hidden}
+.cross.lit{--c:var(--led);filter:drop-shadow(0 0 7px var(--glow))}
+.cross.soon{--c:var(--amber);filter:drop-shadow(0 0 7px rgba(255,185,59,.5))}
+.cross.off{--c:var(--dim)}
+.cross.unk i{background:transparent;box-shadow:inset 0 0 0 1.5px #6f8c7d}
+.cross.busy i{animation:pulse 1.3s ease-in-out infinite}
+.cross.busy i:nth-child(2){animation-delay:.1s}.cross.busy i:nth-child(4){animation-delay:.2s}.cross.busy i:nth-child(6){animation-delay:.3s}.cross.busy i:nth-child(8){animation-delay:.4s}
+.sm{--u:6px}
+.row .cross.lit{--c:var(--lit-sm);filter:none}
+.row .cross.soon{--c:#e39a00;filter:none}
+.row .cross.off{--c:var(--off-sm)}
+.row .cross.unk i{box-shadow:inset 0 0 0 1.5px var(--mut)}
+@keyframes pulse{0%,100%{opacity:.25}50%{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---- contenu ---- */
+main{max-width:640px;margin:0 auto;padding:4px max(16px,env(safe-area-inset-right)) 28px max(16px,env(safe-area-inset-left))}
+.lh{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:24px 0 2px;flex-wrap:wrap}
+.lt{margin:0;font:600 21px/1.2 var(--serif)}
+.chips{display:flex;gap:6px}
+.chip{min-height:38px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);background:transparent;font:600 14.5px/1 var(--sans);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.note{margin:10px 0 0;font:14px/1.45 var(--sans);color:var(--mut)}
+ul.rows{list-style:none;margin:0;padding:0}
+.row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:0 8px;border-bottom:1px solid var(--line)}
+.rm{display:flex;align-items:flex-start;gap:14px;width:100%;padding:14px 0;border:0;background:transparent;text-align:left;cursor:pointer}
+.rm .cross{margin-top:6px}
+.rt{display:block;min-width:0}
+.rn{display:block;font:600 18px/1.22 var(--serif);overflow-wrap:anywhere}
+.rs{display:block;margin-top:2px;font:600 15px/1.3 var(--sans)}
+.rs.open{color:var(--ok)}.rs.soon,.rs.opening{color:var(--warn)}.rs.closed,.rs.unknown{color:var(--mut)}
+.rl{display:flex;flex-wrap:wrap;gap:0 12px;margin-top:2px;font:14px/1.4 var(--sans);color:var(--mut)}
+.rl b{font-weight:600;color:var(--ink)}
+.ibs{display:flex;gap:8px}
+.ib{width:46px;height:46px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;text-decoration:none;background:transparent}
+.ib svg{width:21px;height:21px}
+.ib.dis{opacity:.35}
+.detail{grid-column:1/-1;padding:0 0 16px 20px}
+.wk{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;margin:0;font:14.5px/1.4 var(--sans)}
+.wk dt{color:var(--mut)}.wk dd{margin:0}
+.wk .today{font-weight:700}
+.wk small{display:block;color:var(--mut);font-size:12.5px}
+.links{display:flex;flex-wrap:wrap;gap:6px 18px;margin:12px 0 0;font:14px/1.4 var(--sans)}
+.links a{color:var(--ok);font-weight:600}
+.more{display:block;width:100%;min-height:48px;margin-top:14px;border-radius:14px;border:1.5px solid var(--line);background:transparent;font:600 16px/1 var(--sans);cursor:pointer}
+
+.garde{margin:22px 0 0;padding:18px;border-radius:16px;background:var(--alert);color:var(--alert-ink)}
+.garde.calm{background:transparent;color:inherit;padding:0;border-top:1px solid var(--line);padding-top:18px;border-radius:0}
+.garde h2{margin:0 0 6px;font:600 20px/1.2 var(--serif)}
+.garde p{margin:0 0 12px;font:15px/1.5 var(--sans);max-width:38em}
+.garde .gb{display:flex;flex-wrap:wrap;gap:10px}
+.gbtn{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 18px;border-radius:13px;font:600 16px/1 var(--sans);text-decoration:none;background:var(--ink);color:var(--paper)}
+.gbtn.o{background:transparent;color:inherit;box-shadow:inset 0 0 0 1.5px currentColor}
+.gbtn svg{width:20px;height:20px}
+.urg{margin:12px 0 0;font:14.5px/1.4 var(--sans)}
+.urg a{font-weight:700}
+
+footer{max-width:640px;margin:0 auto;padding:6px max(16px,env(safe-area-inset-right)) calc(28px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));font:13px/1.55 var(--sans);color:var(--mut)}
+footer p{margin:0 0 8px;max-width:40em}
+.install{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:9;display:flex;gap:12px;align-items:center;max-width:616px;margin:0 auto;padding:12px 12px 12px 16px;border-radius:16px;background:var(--ink);color:var(--paper);font:14.5px/1.35 var(--sans);box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.install span{flex:1}
+.install button{flex:none;min-height:40px;padding:0 14px;border:0;border-radius:11px;background:var(--paper);color:var(--ink);font:600 14px/1 var(--sans);cursor:pointer}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (max-width:360px){.hn{font-size:24px}.act{font-size:16px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="board">
+  <div class="in">
+    <form id="f" class="sf" role="search" autocomplete="off">
+      <label class="sr" for="q">Ville, adresse ou code postal</label>
+      <input id="q" type="search" placeholder="Ville, adresse ou code postal" enterkeyhint="search" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="sug">
+      <button id="loc" class="locbtn" type="button" aria-label="Utiliser ma position" aria-busy="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+      </button>
+      <ul id="sug" class="sug" role="listbox" hidden></ul>
+    </form>
+    <div id="hero"></div>
+  </div>
+</header>
+<main>
+  <div id="garde-top"></div>
+  <div id="list"></div>
+  <div id="garde-bottom"></div>
+</main>
+<footer>
+  <p>Les horaires viennent d'OpenStreetMap et peuvent être périmés ou incomplets: appelez avant de vous déplacer.</p>
+  <p><span id="meta"></span>Données © contributeurs <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (licence ODbL). Adresses: Géoplateforme IGN.</p>
+  <p>Votre position reste sur votre téléphone. Seule la zone de recherche (environ 20 km) est demandée au site, et le texte saisi dans la barre de recherche part vers le service d'adresses de l'IGN.</p>
+</footer>
+<div id="install" class="install" hidden><span>Pour l'installer: touchez Partager dans Safari, puis « Sur l'écran d'accueil ».</span><button id="install-x" type="button">Fermer</button></div>
+<script>
+/* Lecteur d'horaires OpenStreetMap (opening_hours), version réduite aux cas utiles pour les pharmacies.
+   Tout ce qui n'est pas compris donne "horaires inconnus" : on n'invente jamais une ouverture. */
+(function (root, factory) {
+  var api = factory();
+  if (typeof module === "object" && module.exports) module.exports = api; else root.OH = api;
+})(this, function () {
+  "use strict";
+  var WD = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+  var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  var JOURS = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"];
+  var TZ = "Europe/Paris";
+  var SOON = 45; /* minutes : "ferme bientôt" / "ouvre bientôt" */
+
+  /* ---------- calendrier ---------- */
+  function civil(y, m, d, add) {
+    var dt = new Date(Date.UTC(y, m - 1, d + add));
+    return { y: dt.getUTCFullYear(), m: dt.getUTCMonth() + 1, d: dt.getUTCDate(), wd: (dt.getUTCDay() + 6) % 7 };
+  }
+  function easter(y) {
+    var a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4,
+        f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30,
+        i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7,
+        m = Math.floor((a + 11 * h + 22 * l) / 451), mo = Math.floor((h + l - 7 * m + 114) / 31),
+        da = ((h + l - 7 * m + 114) % 31) + 1;
+    return { m: mo, d: da };
+  }
+  var phMemo = {};
+  function holidays(y) {
+    if (phMemo[y]) return phMemo[y];
+    var s = {};
+    function add(m, d, n) { s[m * 100 + d] = n; }
+    add(1, 1, "Jour de l'an"); add(5, 1, "Fête du travail"); add(5, 8, "Victoire 1945"); add(7, 14, "Fête nationale");
+    add(8, 15, "Assomption"); add(11, 1, "Toussaint"); add(11, 11, "Armistice"); add(12, 25, "Noël");
+    var e = easter(y);
+    [[1, "Lundi de Pâques"], [39, "Ascension"], [50, "Lundi de Pentecôte"]].forEach(function (x) {
+      var dt = new Date(Date.UTC(y, e.m - 1, e.d + x[0]));
+      add(dt.getUTCMonth() + 1, dt.getUTCDate(), x[1]);
+    });
+    return (phMemo[y] = s);
+  }
+  function holidayName(y, m, d) { return holidays(y)[m * 100 + d] || null; }
+
+  /* Heure légale de Paris, quel que soit le fuseau du téléphone. */
+  var fmt = null;
+  function now(date) {
+    date = date || new Date();
+    try {
+      fmt = fmt || new Intl.DateTimeFormat("en-GB", { timeZone: TZ, hourCycle: "h23", year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric" });
+      var p = {};
+      fmt.formatToParts(date).forEach(function (x) { p[x.type] = parseInt(x.value, 10); });
+      var c = civil(p.year, p.month, p.day, 0);
+      c.min = (p.hour % 24) * 60 + p.minute;
+      return c;
+    } catch (e) {
+      var c2 = civil(date.getFullYear(), date.getMonth() + 1, date.getDate(), 0);
+      c2.min = date.getHours() * 60 + date.getMinutes();
+      return c2;
+    }
+  }
+
+  /* ---------- analyse du texte ---------- */
+  var T = "\\d{1,2}:\\d{2}";
+  var reTimes = new RegExp("^" + T + "-" + T + "(?:," + T + "-" + T + ")*$");
+  var wdItem = "(?:Mo|Tu|We|Th|Fr|Sa|Su|PH|SH)(?:-(?:Mo|Tu|We|Th|Fr|Sa|Su))?";
+  var reWd = new RegExp("^" + wdItem + "(?:," + wdItem + ")*$");
+  var monName = "(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)";
+  var reMon = new RegExp("^(" + monName + ")(?:-(" + monName + "))?$");
+  var reDays = /^\d{1,2}(?:,\d{1,2})*$/;
+
+  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase(); }
+  function mins(t) { var a = t.split(":"); return parseInt(a[0], 10) * 60 + parseInt(a[1], 10); }
+
+  function parseTimes(s) {
+    var out = [];
+    var parts = s.split(",");
+    for (var i = 0; i < parts.length; i++) {
+      var ab = parts[i].split("-"), a = mins(ab[0]), b = mins(ab[1]);
+      if (a > 1440 || b > 1440 || (a % 60 === 0 && a > 1439)) return null;
+      if (b === 0 && a > 0) b = 1440;      /* 09:00-00:00 : jusqu'à minuit */
+      if (b === a) continue;
+      if (b < a) b += 1440;                /* 22:00-02:00 : passe minuit */
+      out.push([a, b]);
+    }
+    return out;
+  }
+
+  function parsePiece(txt, add) {
+    var t = txt.trim().split(/\s+/).filter(Boolean);
+    var r = { days: null, ph: false, months: null, dates: null, times: null, mod: null, add: add };
+    if (!t.length) return null;
+    var last = t[t.length - 1];
+    if (/^(off|closed|open|unknown)$/.test(last)) { r.mod = last === "closed" ? "off" : last; t.pop(); }
+    if (t.length && reTimes.test(t[t.length - 1])) {
+      r.times = parseTimes(t.pop());
+      if (!r.times) return null;
+      if (!r.mod) r.mod = "open";
+    }
+    if (!r.mod) return null;                /* une règle sans heures ni off n'a pas de sens */
+    if (r.mod === "open" && !r.times) r.mod = "unknown";
+    for (var i = 0; i < t.length; i++) {
+      var tok = t[i], m;
+      if (reWd.test(tok)) {
+        var days = r.days || [false, false, false, false, false, false, false];
+        var items = tok.split(",");
+        for (var j = 0; j < items.length; j++) {
+          var it = items[j];
+          if (it === "PH") { r.ph = true; continue; }
+          if (it === "SH") return null;     /* vacances scolaires : non géré */
+          var ab = it.split("-"), a = WD.indexOf(ab[0]), b = ab.length > 1 ? WD.indexOf(ab[1]) : a;
+          for (var k = a; ; k = (k + 1) % 7) { days[k] = true; if (k === b) break; }
+        }
+        if (days.some(Boolean)) r.days = days;
+      } else if ((m = reMon.exec(tok))) {
+        var m1 = MON.indexOf(m[1]) + 1, m2 = m[2] ? MON.indexOf(m[2]) + 1 : m1;
+        if (t[i + 1] && reDays.test(t[i + 1]) && !m[2]) {
+          r.dates = (r.dates || []).concat(t[i + 1].split(",").map(function (d) { return { m: m1, d: parseInt(d, 10) }; }));
+          i++;
+        } else r.months = [m1, m2];
+      } else return null;
+    }
+    return r;
+  }
+
+  function parse(raw) {
+    var res = { raw: raw || "", ok: false, rules: [] };
+    if (!raw || typeof raw !== "string") return res;
+    var s = raw.replace(/[‐‑–—]/g, "-").replace(/"[^"]*"/g, " ").replace(/\s+/g, " ").trim();
+    if (!s) return res;
+    s = s.replace(/\b(mo|tu|we|th|fr|sa|su|ph|sh|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b/gi, function (x) {
+           var l = x.toLowerCase();
+           return (l === "ph" || l === "sh") ? l.toUpperCase() : cap(x);
+         })
+         .replace(/\b(OFF|CLOSED|OPEN|UNKNOWN)\b/g, function (x) { return x.toLowerCase(); });
+    if (/^24\/7$/.test(s)) { res.ok = true; res.rules = [{ days: null, ph: false, months: null, dates: null, times: [[0, 1440]], mod: "open", add: false }]; return res; }
+    var parts = s.split(";");
+    for (var i = 0; i < parts.length; i++) {
+      var p = parts[i].trim();
+      if (!p) continue;
+      p = p.replace(/(\d|off|closed)\s*,\s*(?=(?:Mo|Tu|We|Th|Fr|Sa|Su|PH|SH|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)(?![a-z]))/g, "$1|");
+      var pieces = p.split("|");
+      for (var j = 0; j < pieces.length; j++) {
+        var pc = pieces[j].replace(/,\s+/g, ",").replace(/^24\/7/, "00:00-24:00").trim();
+        var rule = parsePiece(pc, j > 0);
+        if (!rule) return res;              /* ok reste faux */
+        res.rules.push(rule);
+      }
+    }
+    res.ok = res.rules.length > 0;
+    return res;
+  }
+
+  /* ---------- évaluation ---------- */
+  function matches(r, c) {
+    if (r.months) {
+      var a = r.months[0], b = r.months[1];
+      if (!(a <= b ? (c.m >= a && c.m <= b) : (c.m >= a || c.m <= b))) return false;
+    }
+    if (r.dates && !r.dates.some(function (x) { return x.m === c.m && x.d === c.d; })) return false;
+    if (r.days || r.ph) {
+      var hit = (r.days && r.days[c.wd]) || (r.ph && holidays(c.y)[c.m * 100 + c.d]);
+      if (!hit) return false;
+    }
+    return true;
+  }
+
+  /* Plages d'une journée civile : [[début, fin]] en minutes (fin > 1440 si ça passe minuit). */
+  function dayData(p, c) {
+    var iv = [], unk = false;
+    for (var i = 0; i < p.rules.length; i++) {
+      var r = p.rules[i];
+      if (!matches(r, c)) continue;
+      if (r.mod === "off") { if (!r.add) { iv = []; unk = false; } }
+      else if (r.mod === "unknown") { unk = true; if (!r.add) iv = []; }
+      else if (r.add) iv = iv.concat(r.times);
+      else { iv = r.times.slice(); unk = false; }
+    }
+    return { iv: iv, unk: unk };
+  }
+
+  function timeline(p, n, span) {
+    var all = [], unk = {};
+    for (var k = -1; k < span; k++) {
+      var c = civil(n.y, n.m, n.d, k), dd = dayData(p, c);
+      if (dd.unk) unk[k] = true;
+      for (var i = 0; i < dd.iv.length; i++) all.push([k * 1440 + dd.iv[i][0], k * 1440 + dd.iv[i][1]]);
+    }
+    all.sort(function (a, b) { return a[0] - b[0]; });
+    var m = [];
+    all.forEach(function (x) {
+      var l = m[m.length - 1];
+      if (l && x[0] <= l[1]) l[1] = Math.max(l[1], x[1]); else m.push([x[0], x[1]]);
+    });
+    return { iv: m, unk: unk };
+  }
+
+  /* state : open | soon | opening | closed | unknown */
+  function status(p, n) {
+    if (!p || !p.ok) return { state: "unknown" };
+    var span = 9, tl = timeline(p, n, span), t = n.min, cur = null, next = null;
+    for (var i = 0; i < tl.iv.length; i++) {
+      var x = tl.iv[i];
+      if (x[0] <= t && t < x[1]) { cur = x; break; }
+      if (x[0] > t) { next = x; break; }
+    }
+    if (cur) {
+      if (cur[1] - t >= 7 * 1440) return { state: "open", always: true };
+      var left = cur[1] - t;
+      return { state: left <= SOON ? "soon" : "open", until: cur[1], left: left };
+    }
+    if (tl.unk[0]) return { state: "unknown" };
+    if (next) return { state: next[0] - t <= SOON ? "opening" : "closed", opens: next[0], inMin: next[0] - t };
+    return { state: "closed" };
+  }
+
+  /* ---------- textes ---------- */
+  function hm(m) {
+    m = ((m % 1440) + 1440) % 1440;
+    var h = Math.floor(m / 60), mm = m % 60;
+    if (h === 0 && mm === 0) return "minuit";
+    return h + " h" + (mm ? " " + (mm < 10 ? "0" : "") + mm : "");
+  }
+  function dayWord(n, absMin) {
+    var k = Math.floor(absMin / 1440);
+    if (k <= 0) return "";
+    if (k === 1) return "demain ";
+    return JOURS[civil(n.y, n.m, n.d, k).wd] + " ";
+  }
+  function describe(st, n) {
+    switch (st.state) {
+      case "open":
+        if (st.always) return "Ouverte 24 h/24";
+        if (st.until === 1440) return "Ouverte jusqu'à minuit";
+        return "Ouverte jusqu'à " + (st.until >= 1440 ? dayWord(n, st.until) : "") + hm(st.until);
+      case "soon": return "Ferme dans " + st.left + " min";
+      case "opening": return "Ouvre dans " + st.inMin + " min";
+      case "closed":
+        if (st.opens == null) return "Fermée";
+        return "Fermée, ouvre " + (st.opens >= 1440 ? dayWord(n, st.opens) + "à " : "à ") + hm(st.opens);
+      default: return "Horaires inconnus";
+    }
+  }
+  function spanText(iv) {
+    return iv.map(function (x) { return hm(x[0]) + " – " + hm(x[1]); }).join(", ");
+  }
+  function week(p, n) {
+    var out = [];
+    for (var k = 0; k < 7; k++) {
+      var c = civil(n.y, n.m, n.d, k), txt, ph = holidayName(c.y, c.m, c.d);
+      if (!p || !p.ok) txt = "Horaires inconnus";
+      else {
+        var dd = dayData(p, c);
+        txt = dd.iv.length ? spanText(dd.iv.slice().sort(function (a, b) { return a[0] - b[0]; })) : (dd.unk ? "Horaires inconnus" : "Fermée");
+      }
+      out.push({ label: k === 0 ? "Aujourd'hui" : JOURS[c.wd].charAt(0).toUpperCase() + JOURS[c.wd].slice(1), text: txt, ph: ph, today: k === 0 });
+    }
+    return out;
+  }
+
+  return { parse: parse, status: status, describe: describe, week: week, now: now, civil: civil, holidayName: holidayName, hm: hm, SOON: SOON };
+});
+</script>
+<script>
+(function () {
+  "use strict";
+  var GEO = "https://data.geopf.fr/geocodage";
+  var OVERPASS = [
+    "https://overpass.openstreetmap.fr/api/interpreter",
+    "https://overpass-api.de/api/interpreter",
+    "https://overpass.kumi.systems/api/interpreter"
+  ];
+  var RADII = [8, 20, 40];            /* km, élargi tant qu'il n'y a pas assez de pharmacies ouvertes */
+  var GARDE_TEL = "3237";
+
+  function $(s) { return document.querySelector(s); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  var LS = {
+    get: function (k, d) { try { var v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+
+  var ICON = {
+    tel: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
+    go: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>',
+    loc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>'
+  };
+  var CROSS = "<i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>";
+
+  /* ---------- état ---------- */
+  var S = {
+    pos: null,          /* {lat, lon, label, mode: "gps" | "manual"} */
+    items: [],          /* pharmacies triées par distance */
+    radius: 0,
+    loading: false,
+    locating: false,
+    error: "",
+    notice: "",         /* ex. "Hors connexion" */
+    filter: "open",
+    shown: 12,
+    open: null,         /* id de la fiche dépliée */
+    meta: null,
+    searchId: 0
+  };
+  var ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+  /* ---------- outils ---------- */
+  function dist(a, b) {
+    var R = 6371000, r = Math.PI / 180, dLat = (b.lat - a.lat) * r, dLon = (b.lon - a.lon) * r;
+    var h = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    return 2 * R * Math.asin(Math.sqrt(h));
+  }
+  function fmtDist(m) {
+    if (m < 1000) return (m < 100 ? Math.round(m / 5) * 5 : Math.round(m / 10) * 10) + " m";
+    return (m < 10000 ? (m / 1000).toFixed(1) : Math.round(m / 1000)).toString().replace(".", ",") + " km";
+  }
+  function telDigits(t) {
+    if (!t) return "";
+    var s = String(t).split(/[;,\/]/)[0].replace(/[^\d+]/g, "");
+    if (s.indexOf("0033") === 0) s = "+33" + s.slice(4);
+    else if (/^0\d{9}$/.test(s)) s = "+33" + s.slice(1);
+    return s;
+  }
+  function telShow(t) {
+    var d = telDigits(t);
+    if (/^\+33\d{9}$/.test(d)) { var n = "0" + d.slice(3); return n.replace(/(\d\d)(?=\d)/g, "$1 "); }
+    return String(t).split(";")[0].trim();
+  }
+  function goUrl(p) {
+    return ios ? "https://maps.apple.com/?daddr=" + p.y + "," + p.x
+                : "https://www.google.com/maps/dir/?api=1&destination=" + p.y + "," + p.x;
+  }
+  function osmUrl(p) {
+    var k = { n: "node", w: "way", r: "relation" }[String(p.i).charAt(0)] || "node";
+    return "https://www.openstreetmap.org/" + k + "/" + String(p.i).slice(1);
+  }
+  function ago(ts) {
+    var m = Math.round((Date.now() - ts) / 60000);
+    if (m < 2) return "à l'instant";
+    if (m < 60) return "il y a " + m + " min";
+    if (m < 1440) return "il y a " + Math.round(m / 60) + " h";
+    return "il y a " + Math.round(m / 1440) + " j";
+  }
+  function oh(p) { return p._oh || (p._oh = OH.parse(p.h)); }
+  function stOf(p, now) { return OH.status(oh(p), now); }
+  function cls(st) { return st.state === "open" ? "open" : st.state === "soon" ? "soon" : st.state === "opening" ? "opening" : st.state === "closed" ? "closed" : "unknown"; }
+  function crossCls(st) { return st.state === "open" ? "lit" : (st.state === "soon" || st.state === "opening") ? "soon" : st.state === "closed" ? "off" : "unk"; }
+  function isOpenish(st) { return st.state === "open" || st.state === "soon" || st.state === "opening"; }
+  function nameOf(p) { return p.n || "Pharmacie"; }
+  function addrOf(p) { return [p.a, p.c].filter(Boolean).join(", "); }
+
+  /* ---------- données : tuiles statiques, puis Overpass en secours ---------- */
+  var tiles = {};
+  function tileKey(lat, lon) { return Math.floor(lat * 5) + "_" + Math.floor(lon * 5); }
+  function tilesFor(pos, R) {
+    var dLat = R / 111.2, dLon = R / (111.2 * Math.cos(pos.lat * Math.PI / 180)), out = [];
+    for (var i = Math.floor((pos.lat - dLat) * 5); i <= Math.floor((pos.lat + dLat) * 5); i++)
+      for (var j = Math.floor((pos.lon - dLon) * 5); j <= Math.floor((pos.lon + dLon) * 5); j++) out.push(i + "_" + j);
+    return out;
+  }
+  function getTile(k) {
+    if (tiles[k]) return tiles[k];
+    return (tiles[k] = fetch("data/p/" + k + ".json").then(function (r) {
+      if (r.status === 404) return [];
+      if (!r.ok) throw new Error("tuile " + r.status);
+      return r.json();
+    }).catch(function (e) { delete tiles[k]; throw e; }));
+  }
+
+  function fromOSM(el) {
+    var t = el.tags || {}, c = el.center || el;
+    if (c.lat == null || c.lon == null || t.dispensing === "no") return null;
+    var street = [t["addr:housenumber"], t["addr:street"]].filter(Boolean).join(" ");
+    var city = [t["addr:postcode"], t["addr:city"]].filter(Boolean).join(" ");
+    return {
+      i: el.type.charAt(0) + el.id, y: c.lat, x: c.lon, n: t.name || t.brand || "",
+      t: t.phone || t["contact:phone"] || "", h: t.opening_hours || "", a: street, c: city,
+      v: t["check_date:opening_hours"] || t.check_date || "", w: t.website || t["contact:website"] || ""
+    };
+  }
+  function liveSearch(pos, km) {
+    var q = '[out:json][timeout:20];nwr["amenity"="pharmacy"](around:' + km * 1000 + "," + pos.lat + "," + pos.lon + ");out center tags 120;";
+    var ctl = new AbortController();
+    var tries = OVERPASS.map(function (u) {
+      return fetch(u, { method: "POST", body: "data=" + encodeURIComponent(q), headers: { "Content-Type": "application/x-www-form-urlencoded" }, signal: ctl.signal })
+        .then(function (r) { if (!r.ok) throw new Error("overpass " + r.status); return r.json(); })
+        .then(function (j) { if (!j || !j.elements) throw new Error("overpass vide"); return j.elements; });
+    });
+    var first = typeof Promise.any === "function" ? Promise.any(tries) : tries[0];
+    return first.then(function (els) { ctl.abort(); return els.map(fromOSM).filter(Boolean); });
+  }
+
+  function lite(p) { return { i: p.i, y: p.y, x: p.x, n: p.n, t: p.t, h: p.h, a: p.a, c: p.c, v: p.v, w: p.w }; }
+  function saveLast() {
+    LS.set("pharma.last", { lat: S.pos.lat, lon: S.pos.lon, t: Date.now(), radius: S.radius, items: S.items.slice(0, 60).map(function (p) { var o = lite(p); o.d = Math.round(p._d); return o; }) });
+  }
+
+  function search(pos) {
+    var id = ++S.searchId, hadItems = S.items.length > 0;
+    S.loading = true; S.error = ""; S.notice = ""; S.shown = 12; S.open = null;
+    render();
+    function step(ri) {
+      var R = RADII[ri], keys = tilesFor(pos, R);
+      return Promise.all(keys.map(getTile)).then(function (lists) {
+        var items = [];
+        lists.forEach(function (l) { l.forEach(function (p) { var d = dist(pos, { lat: p.y, lon: p.x }); if (d <= R * 1000) { p._d = d; items.push(p); } }); });
+        items.sort(function (a, b) { return a._d - b._d; });
+        var now = OH.now(), openN = items.filter(function (p) { return isOpenish(stOf(p, now)); }).length;
+        if ((items.length >= 8 && openN >= 3) || ri === RADII.length - 1) return { items: items, R: R };
+        return step(ri + 1);
+      });
+    }
+    return step(0).then(function (res) {
+      if (res.items.length) return { res: res, live: false };
+      return liveSearch(pos, 10).then(function (items) {
+        items.forEach(function (p) { p._d = dist(pos, { lat: p.y, lon: p.x }); });
+        items.sort(function (a, b) { return a._d - b._d; });
+        return { res: { items: items, R: 10 }, live: true };
+      });
+    }).then(function (o) {
+      if (id !== S.searchId) return;
+      S.items = o.res.items; S.radius = o.res.R; S.loading = false;
+      S.notice = o.live ? "Résultats en direct depuis OpenStreetMap." : "";
+      saveLast(); render();
+    }).catch(function () {
+      if (id !== S.searchId) return;
+      S.loading = false;
+      if (hadItems) S.notice = (navigator.onLine === false ? "Hors connexion" : "Réseau indisponible") + ": résultats de la dernière recherche" + (S.stamp ? " (" + ago(S.stamp) + ")" : "") + ". Les horaires restent calculés à l'heure actuelle.";
+      else S.error = navigator.onLine === false ? "Pas de connexion et aucune recherche enregistrée. Reconnectez-vous une fois pour que l'appli garde la zone en mémoire." : "Impossible de charger les pharmacies. Vérifiez la connexion et réessayez.";
+      render();
+    });
+  }
+
+  /* ---------- position ---------- */
+  function setPos(lat, lon, label, mode) {
+    S.pos = { lat: lat, lon: lon, label: label || "", mode: mode };
+    LS.set("pharma.pos", S.pos);
+    $("#q").value = label || "";
+    return search(S.pos);
+  }
+  function reverse(lat, lon) {
+    return fetch(GEO + "/reverse?lon=" + lon + "&lat=" + lat + "&limit=1").then(function (r) { return r.json(); }).then(function (j) {
+      var f = j.features && j.features[0];
+      return f ? (f.properties.city ? f.properties.city + (f.properties.postcode ? " " + f.properties.postcode : "") : f.properties.label) : "";
+    }).catch(function () { return ""; });
+  }
+  function locate(silent) {
+    if (!navigator.geolocation) { S.error = "Ce navigateur ne sait pas donner la position. Saisissez une ville ci-dessus."; render(); return; }
+    S.locating = true; if (!silent) { S.error = ""; } render();
+    navigator.geolocation.getCurrentPosition(function (g) {
+      S.locating = false;
+      var lat = g.coords.latitude, lon = g.coords.longitude;
+      if (silent && S.pos && S.pos.mode === "gps" && dist(S.pos, { lat: lat, lon: lon }) < 250) { render(); return; }
+      var label = (S.pos && S.pos.mode === "gps" && dist(S.pos, { lat: lat, lon: lon }) < 1500 && S.pos.label) || "Ma position";
+      setPos(lat, lon, label, "gps");
+      reverse(lat, lon).then(function (l) { if (l && S.pos && S.pos.mode === "gps") { S.pos.label = l; LS.set("pharma.pos", S.pos); $("#q").value = l; } });
+    }, function (e) {
+      S.locating = false;
+      if (silent) { render(); return; }
+      S.error = e.code === 1
+        ? "La position est refusée pour cette appli. Autorisez-la dans Réglages > Confidentialité > Service de localisation, ou saisissez une ville ci-dessus."
+        : "Position introuvable pour le moment. Réessayez, ou saisissez une ville ci-dessus.";
+      render();
+    }, { enableHighAccuracy: false, timeout: 9000, maximumAge: silent ? 300000 : 60000 });
+  }
+  function silentLocate() {
+    if (!S.pos || S.pos.mode !== "gps" || !navigator.permissions || !navigator.permissions.query) return;
+    navigator.permissions.query({ name: "geolocation" }).then(function (p) { if (p.state === "granted") locate(true); }).catch(function () {});
+  }
+
+  /* ---------- recherche d'adresse ---------- */
+  var sugs = [], sugSel = -1, sugT = 0, sugCtl = null;
+  function hideSug() { sugs = []; sugSel = -1; var u = $("#sug"); u.hidden = true; u.innerHTML = ""; $("#q").setAttribute("aria-expanded", "false"); }
+  function showSug() {
+    var u = $("#sug");
+    if (!sugs.length) { hideSug(); return; }
+    u.innerHTML = sugs.map(function (s, i) { return '<li role="option" id="s' + i + '" data-i="' + i + '"' + (i === sugSel ? ' aria-selected="true"' : "") + ">" + esc(s.label) + (s.ctx ? "<small>" + esc(s.ctx) + "</small>" : "") + "</li>"; }).join("");
+    u.hidden = false; $("#q").setAttribute("aria-expanded", "true");
+  }
+  function geocode(v) {
+    if (sugCtl) sugCtl.abort();
+    sugCtl = new AbortController();
+    return fetch(GEO + "/search?q=" + encodeURIComponent(v) + "&limit=5", { signal: sugCtl.signal }).then(function (r) { return r.json(); }).then(function (j) {
+      return (j.features || []).map(function (f) {
+        return { label: f.properties.label, ctx: f.properties.context || "", lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0] };
+      });
+    });
+  }
+  function pick(i) {
+    var s = sugs[i]; if (!s) return;
+    hideSug(); $("#q").blur();
+    setPos(s.lat, s.lon, s.label, "manual");
+  }
+  $("#q").addEventListener("input", function () {
+    clearTimeout(sugT);
+    var v = this.value.trim();
+    if (v.length < 3) { hideSug(); return; }
+    sugT = setTimeout(function () { geocode(v).then(function (r) { sugs = r; sugSel = -1; showSug(); }).catch(function () {}); }, 220);
+  });
+  $("#q").addEventListener("focus", function () { this.select(); });
+  $("#q").addEventListener("keydown", function (e) {
+    if (e.key === "ArrowDown" && sugs.length) { e.preventDefault(); sugSel = (sugSel + 1) % sugs.length; showSug(); }
+    else if (e.key === "ArrowUp" && sugs.length) { e.preventDefault(); sugSel = (sugSel - 1 + sugs.length) % sugs.length; showSug(); }
+    else if (e.key === "Escape") hideSug();
+  });
+  $("#f").addEventListener("submit", function (e) {
+    e.preventDefault();
+    clearTimeout(sugT);
+    if (sugs.length) { pick(sugSel >= 0 ? sugSel : 0); return; }
+    var v = $("#q").value.trim(); if (v.length < 2) return;
+    geocode(v).then(function (r) { sugs = r; if (r.length) pick(0); else { S.error = "Aucun lieu trouvé pour « " + v + " ». Essayez une ville ou un code postal."; render(); } }).catch(function () { S.error = "La recherche d'adresse est indisponible. Utilisez le bouton de position."; render(); });
+  });
+  $("#sug").addEventListener("mousedown", function (e) { e.preventDefault(); });
+  $("#sug").addEventListener("click", function (e) { var li = e.target.closest("li"); if (li) pick(+li.getAttribute("data-i")); });
+  $("#q").addEventListener("blur", function () { setTimeout(hideSug, 150); });
+  $("#loc").addEventListener("click", function () { locate(false); });
+
+  /* ---------- affichage ---------- */
+  function btnTel(p, big) {
+    var d = telDigits(p.t);
+    if (!d) return "";
+    return '<a class="act p" href="tel:' + esc(d) + '">' + ICON.tel + "<span>Appeler<small>" + esc(telShow(p.t)) + "</small></span></a>";
+  }
+  function gardeHtml(alertMode, reason) {
+    return '<section class="garde' + (alertMode ? "" : " calm") + '" aria-labelledby="gh"><h2 id="gh">' + (alertMode ? "Chercher une pharmacie de garde" : "Nuit, dimanche et jours fériés") + "</h2>" +
+      "<p>" + esc(reason) + " Les gardes ne sont pas publiées en données ouvertes: l'appli montre les horaires habituels. Le 3237 ou 3237.fr indique la pharmacie de garde du jour.</p>" +
+      '<div class="gb"><a class="gbtn" href="tel:' + GARDE_TEL + '">' + ICON.tel + 'Appeler le 3237</a><a class="gbtn o" href="https://www.3237.fr" target="_blank" rel="noopener">Ouvrir 3237.fr</a></div>' +
+      '<p class="urg">Urgence vitale: <a href="tel:15">15 (SAMU)</a> ou <a href="tel:112">112</a>.</p></section>';
+  }
+
+  function render() {
+    var now = OH.now(), board = $("#hero"), list = $("#list"), top = $("#garde-top"), bottom = $("#garde-bottom");
+    var holiday = OH.holidayName(now.y, now.m, now.d);
+    var hour = Math.floor(now.min / 60);
+    var rows = S.items.map(function (p) { return { p: p, st: stOf(p, now) }; });
+    var hero = null;
+    for (var i = 0; i < rows.length; i++) { if (isOpenish(rows[i].st)) { hero = rows[i]; break; } }
+    var reason = "";
+    if (holiday) reason = "Aujourd'hui (" + holiday + "), beaucoup de pharmacies sont fermées.";
+    else if (now.wd === 6) reason = "C'est dimanche: la plupart des pharmacies sont fermées.";
+    else if (hour >= 20 || hour < 8) reason = "Il est " + OH.hm(now.min) + ": les pharmacies de journée sont fermées.";
+    else if (S.pos && !S.loading && S.items.length && !hero) reason = "Aucune pharmacie ouverte trouvée près de vous d'après les horaires habituels.";
+    var alertMode = !!reason && (!hero || holiday || now.wd === 6 || hour >= 20 || hour < 8);
+    if (!reason) reason = "Les pharmacies de garde assurent les urgences en dehors des horaires habituels.";
+
+    /* enseigne */
+    var h = "";
+    if (!S.pos) {
+      h = '<div class="hero"><span class="cross off" aria-hidden="true">' + CROSS + '</span><div><p class="lead">Trouvez la pharmacie ouverte la plus proche</p><p class="sub">Appel et itinéraire en un geste. Votre position reste sur votre téléphone.</p></div></div>';
+      if (S.error) h += '<p class="sub" role="alert">' + esc(S.error) + "</p>";
+      h += '<div class="hero"><div class="acts one"><button class="act p" id="loc2" type="button">' + ICON.loc + "<span>Utiliser ma position</span></button></div></div>";
+    } else if ((S.loading || S.locating) && !S.items.length) {
+      h = '<div class="hero"><span class="cross lit busy" aria-hidden="true">' + CROSS + '</span><div><p class="lead">Recherche en cours</p><p class="sub">Je regarde les pharmacies autour de ' + esc(S.pos.label || "vous") + ".</p></div></div>";
+    } else if (S.error && !S.items.length) {
+      h = '<div class="hero"><span class="cross off" aria-hidden="true">' + CROSS + '</span><div><p class="lead">Rien à afficher</p><p class="sub" role="alert">' + esc(S.error) + '</p></div></div>';
+    } else if (hero) {
+      var p = hero.p, tel = btnTel(p);
+      h = '<div class="hero"><span class="cross ' + crossCls(hero.st) + '" aria-hidden="true">' + CROSS + '</span><div><p class="hk">Ouverte la plus proche</p><h2 class="hn">' + esc(nameOf(p)) + '</h2><p class="hs ' + cls(hero.st) + '">' + esc(OH.describe(hero.st, now)) + '</p><p class="ha"><b>' + fmtDist(p._d) + "</b>" + (addrOf(p) ? "<span>" + esc(addrOf(p)) + "</span>" : "") + "</p></div>" +
+        '<div class="acts' + (tel ? "" : " one") + '">' + tel + '<a class="act s" href="' + esc(goUrl(p)) + '">' + ICON.go + "<span>Y aller</span></a></div></div>";
+    } else if (S.items.length) {
+      h = '<div class="hero"><span class="cross off" aria-hidden="true">' + CROSS + '</span><div><p class="lead">Aucune pharmacie ouverte trouvée</p><p class="sub">Dans un rayon de ' + S.radius + " km, toutes les pharmacies sont fermées d'après leurs horaires habituels. Une pharmacie de garde est peut-être ouverte: appelez le 3237.</p></div>" +
+        '<div class="acts"><a class="act p" href="tel:' + GARDE_TEL + '">' + ICON.tel + "<span>Appeler le 3237<small>pharmacie de garde</small></span></a>" +
+        '<a class="act s" href="https://www.3237.fr" target="_blank" rel="noopener"><span>Ouvrir 3237.fr</span></a></div></div>';
+    } else {
+      h = '<div class="hero"><span class="cross off" aria-hidden="true">' + CROSS + '</span><div><p class="lead">Aucune pharmacie trouvée</p><p class="sub">Aucune pharmacie dans la base à moins de ' + (S.radius || RADII[RADII.length - 1]) + " km. Essayez une ville proche.</p></div></div>";
+    }
+    board.innerHTML = h;
+    var l2 = $("#loc2"); if (l2) l2.addEventListener("click", function () { locate(false); });
+    $("#loc").setAttribute("aria-busy", S.locating ? "true" : "false");
+
+    /* liste */
+    var others = rows.filter(function (r) { return r !== hero; });
+    var openOnes = others.filter(function (r) { return isOpenish(r.st); });
+    var l = "";
+    if (S.pos && others.length) {
+      var shownRows = S.filter === "open" ? openOnes : others;
+      var cut = shownRows.slice(0, S.shown), unkN = others.filter(function (r) { return r.st.state === "unknown"; }).length;
+      l += '<div class="lh"><h2 class="lt">' + (hero ? "Autres pharmacies" : "Pharmacies proches") + '</h2><div class="chips" role="group" aria-label="Filtre">' +
+        '<button class="chip" type="button" data-f="open" aria-pressed="' + (S.filter === "open") + '">Ouvertes ' + openOnes.length + "</button>" +
+        '<button class="chip" type="button" data-f="all" aria-pressed="' + (S.filter === "all") + '">Toutes ' + others.length + "</button></div></div>";
+      if (S.notice) l += '<p class="note">' + esc(S.notice) + "</p>";
+      if (!cut.length) l += '<p class="note">' + (S.filter === "open" ? "Aucune autre pharmacie ouverte dans un rayon de " + S.radius + " km." + (others.length ? " Touchez « Toutes » pour voir les horaires de réouverture." : "") : "Rien d'autre dans la zone.") + "</p>";
+      else {
+        l += '<ul class="rows">' + cut.map(function (r) { return rowHtml(r, now); }).join("") + "</ul>";
+        if (shownRows.length > S.shown) l += '<button class="more" type="button" id="more">Afficher ' + Math.min(10, shownRows.length - S.shown) + " de plus</button>";
+      }
+      if (S.filter === "open" && unkN) l += '<p class="note">' + unkN + (unkN > 1 ? " pharmacies n'ont" : " pharmacie n'a") + " pas d'horaires connus: elles sont dans « Toutes ». Appelez avant de vous déplacer.</p>";
+    } else if (S.notice) l += '<p class="note">' + esc(S.notice) + "</p>";
+    list.innerHTML = l;
+
+    var g = gardeHtml(alertMode, reason);
+    top.innerHTML = alertMode ? g : ""; bottom.innerHTML = alertMode ? "" : g;
+    $("#meta").textContent = S.meta ? "Base du " + new Date(S.meta.built).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Paris" }) + ", " + String(S.meta.count).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " pharmacies. " : "";
+  }
+
+  function rowHtml(r, now) {
+    var p = r.p, st = r.st, id = esc(p.i), open = S.open === p.i, d = telDigits(p.t);
+    var a = '<li class="row" data-id="' + id + '"><button class="rm" type="button" aria-expanded="' + open + '" data-id="' + id + '"><span class="cross sm ' + crossCls(st) + '" aria-hidden="true">' + CROSS + '</span><span class="rt"><span class="rn">' + esc(nameOf(p)) + '</span><span class="rs ' + cls(st) + '">' + esc(OH.describe(st, now)) + '</span><span class="rl"><b>' + fmtDist(p._d) + "</b>" + (addrOf(p) ? "<span>" + esc(addrOf(p)) + "</span>" : "") + "</span></span></button>" +
+      '<div class="ibs">' + (d ? '<a class="ib" href="tel:' + esc(d) + '" aria-label="Appeler ' + esc(nameOf(p)) + '">' + ICON.tel + "</a>" : "") +
+      '<a class="ib" href="' + esc(goUrl(p)) + '" aria-label="Itinéraire vers ' + esc(nameOf(p)) + '">' + ICON.go + "</a></div>";
+    if (open) {
+      var wk = OH.week(oh(p), now);
+      a += '<div class="detail"><dl class="wk">' + wk.map(function (w) { return "<dt" + (w.today ? ' class="today"' : "") + ">" + esc(w.label) + "</dt><dd" + (w.today ? ' class="today"' : "") + ">" + esc(w.text) + (w.ph ? "<small>" + esc(w.ph) + " (jour férié)</small>" : "") + "</dd>"; }).join("") + "</dl>" +
+        (!oh(p).ok && p.h ? '<p class="note">Horaires indiqués dans OpenStreetMap: ' + esc(p.h) + ". Format non reconnu, appelez pour confirmer.</p>" : "") +
+        (!p.h ? '<p class="note">Cette pharmacie n\'a pas d\'horaires dans OpenStreetMap.</p>' : "") +
+        (p.v ? '<p class="note">Horaires vérifiés le ' + esc(p.v) + ".</p>" : "") +
+        '<p class="links">' + (/^https?:\/\//.test(p.w) ? '<a href="' + esc(p.w) + '" target="_blank" rel="noopener">Site de la pharmacie</a>' : "") + '<a href="' + esc(osmUrl(p)) + '" target="_blank" rel="noopener">Corriger sur OpenStreetMap</a></p></div>';
+    }
+    return a + "</li>";
+  }
+
+  document.addEventListener("click", function (e) {
+    var c = e.target.closest("[data-f]");
+    if (c) { S.filter = c.getAttribute("data-f"); S.shown = 12; render(); return; }
+    var m = e.target.closest(".rm");
+    if (m) { var id = m.getAttribute("data-id"); S.open = S.open === id ? null : id; render(); var el = document.querySelector('.row[data-id="' + id + '"]'); if (S.open && el && el.scrollIntoView) el.scrollIntoView({ block: "nearest", behavior: "smooth" }); return; }
+    if (e.target.id === "more") { S.shown += 10; render(); }
+  });
+
+  /* ---------- démarrage ---------- */
+  function boot() {
+    fetch("data/meta.json").then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { if (j && j.built) { S.meta = j; render(); } }).catch(function () {});
+    var sp = LS.get("pharma.pos", null), last = LS.get("pharma.last", null);
+    if (sp && typeof sp.lat === "number" && typeof sp.lon === "number") {
+      S.pos = sp; $("#q").value = sp.label || "";
+      if (last && last.items && dist(sp, last) < 800) {
+        S.items = last.items.map(function (o) { o._d = dist(sp, { lat: o.y, lon: o.x }); return o; }).sort(function (a, b) { return a._d - b._d; });
+        S.radius = last.radius || 8; S.stamp = last.t;
+      }
+      render(); search(sp); silentLocate();
+    } else render();
+    if (ios && !window.navigator.standalone && !LS.get("pharma.hideInstall", false)) {
+      $("#install").hidden = false;
+      $("#install-x").addEventListener("click", function () { $("#install").hidden = true; LS.set("pharma.hideInstall", true); });
+    }
+  }
+  setInterval(function () { if (document.visibilityState === "visible" && S.pos && !document.activeElement.matches("#q")) render(); }, 60000);
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState !== "visible" || !S.pos) return;
+    render();
+    if (S.stamp == null || Date.now() - (LS.get("pharma.last", {}).t || 0) > 10 * 60000) { if (S.pos.mode === "gps") silentLocate(); }
+  });
+  /* Icône d'écran d'accueil iPhone : dessinée ici, car Safari n'accepte que du PNG. */
+  function makeIcon() {
+    try {
+      var c = document.createElement("canvas"); c.width = c.height = 180;
+      var x = c.getContext("2d"), u = 30, g = 5, o = (180 - (3 * u + 2 * g)) / 2;
+      x.fillStyle = "#0e2a20"; x.fillRect(0, 0, 180, 180);
+      x.fillStyle = "#35e68c"; x.shadowColor = "rgba(53,230,140,.7)"; x.shadowBlur = 14;
+      [[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]].forEach(function (p) {
+        x.beginPath(); var px = o + p[0] * (u + g), py = o + p[1] * (u + g);
+        if (x.roundRect) x.roundRect(px, py, u, u, 6); else x.rect(px, py, u, u);
+        x.fill();
+      });
+      $("#touch-icon").href = c.toDataURL("image/png");
+    } catch (e) {}
+  }
+  makeIcon();
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function () {});
+  boot();
+})();
+</script>
+</body>
+</html>
