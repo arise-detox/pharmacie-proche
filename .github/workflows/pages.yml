@@ -1,0 +1,67 @@
+name: Pharmacie proche
+
+on:
+  schedule:
+    # chaque dimanche à 03:17 UTC : données OpenStreetMap rafraîchies
+    - cron: "17 3 * * 0"
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      refresh:
+        description: "Forcer le rechargement des données OpenStreetMap"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install requests
+
+      # Garde les données et les adresses déjà trouvées d'une exécution à l'autre.
+      - uses: actions/cache@v4
+        with:
+          path: .cache
+          key: pharma-data-${{ github.run_id }}
+          restore-keys: pharma-data-
+
+      - name: Générer les tuiles de pharmacies
+        run: python scripts/build_pharmacies.py _site/data
+        env:
+          FORCE_REFRESH: ${{ (github.event_name == 'schedule' || inputs.refresh) && '1' || '0' }}
+
+      - name: Préparer le site
+        run: cp index.html sw.js manifest.webmanifest icon.svg _site/
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
