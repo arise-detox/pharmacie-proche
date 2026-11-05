@@ -1,0 +1,1 @@
+{"name":"Pharmacie proche","short_name":"Pharmacie","description":"La pharmacie ouverte la plus proche, appel et itinéraire en un geste.","lang":"fr","start_url":"./","scope":"./","display":"standalone","background_color":"#0e2a20","theme_color":"#0e2a20","icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}]}
