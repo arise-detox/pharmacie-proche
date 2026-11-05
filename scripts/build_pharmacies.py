@@ -20,6 +20,7 @@ FAST = os.environ.get("PHARMA_FAST") == "1"
 ENRICH_BUDGET = int(os.environ.get("PHARMA_ENRICH_SECONDS", "720"))
 HEADERS = {"User-Agent": "pharmacie-proche/1.0 (+https://github.com/arise-detox/pharmacie-proche)"}
 TILE = 5  # cases par degré
+DATA_VERSION = 2  # à augmenter quand la forme ou le nettoyage des données change : le cache est alors refait
 
 
 def log(*a):
@@ -73,6 +74,8 @@ def normalise(el):
     if t.get("disused:amenity") or t.get("opening_hours") == "off":
         return None
     street = " ".join(x for x in [t.get("addr:housenumber"), t.get("addr:street")] if x)
+    if not re.search(r"[^\W\d_]", street):
+        street = ""  # un numéro sans nom de rue ne sert à rien : l'IGN complètera
     city = " ".join(x for x in [t.get("addr:postcode"), t.get("addr:city")] if x)
     it = {
         "i": el["type"][0] + str(el["id"]),
@@ -174,7 +177,7 @@ def write(items, out):
         lst.sort(key=lambda z: z["i"])
         with open(os.path.join(out, "p", k + ".json"), "w", encoding="utf-8") as f:
             json.dump(lst, f, ensure_ascii=False, separators=(",", ":"))
-    meta = {"built": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "count": len(items), "tiles": len(tiles)}
+    meta = {"built": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "count": len(items), "tiles": len(tiles), "v": DATA_VERSION}
     json.dump(meta, open(os.path.join(out, "meta.json"), "w"), separators=(",", ":"))
     return meta
 
@@ -185,7 +188,7 @@ def main():
     try:
         m = json.load(open(os.path.join(cached, "meta.json")))
         age = (dt.datetime.now(dt.timezone.utc) - dt.datetime.strptime(m["built"], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=dt.timezone.utc)).days
-        if not force and age < 6:
+        if not force and age < 6 and m.get("v") == DATA_VERSION:
             log("données en cache (%d j, %d pharmacies) : réutilisées" % (age, m["count"]))
             if os.path.abspath(cached) != os.path.abspath(OUT):
                 if os.path.isdir(OUT):
