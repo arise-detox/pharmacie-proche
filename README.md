@@ -6,6 +6,9 @@ Application web installable (PWA) qui montre la pharmacie **ouverte** la plus pr
 - Fonctionne hors connexion pour les zones déjà consultées.
 - Pour la nuit, le dimanche et les jours fériés, renvoie vers le 3237 et 3237.fr. La liste officielle des pharmacies de garde n'existe pas en données ouvertes : l'appli n'affirme jamais qu'une pharmacie est « de garde ».
 
+- Six langues : français, anglais, russe, géorgien, chinois (simplifié) et coréen. La langue du téléphone est détectée ; le choix (bouton en haut à droite) est mémorisé.
+- À l'ouverture du site dans un navigateur, un guide explique l'installation (iPhone avec Safari, Android avec Chrome). « Ne plus afficher » le masque, le bouton Installer le rouvre. Dans l'appli installée, il n'apparaît jamais.
+
 **Installer sur iPhone** : ouvrir le site dans Safari, toucher Partager, puis « Sur l'écran d'accueil ».
 
 ## Comment ça marche
@@ -14,7 +17,7 @@ Un site statique, sans serveur ni compte.
 
 | Élément | Rôle |
 |---|---|
-| `index.html` | Toute l'application (interface + lecteur d'horaires `opening_hours`) |
+| `index.html` | Toute l'application (interface, traductions, guide d'installation, lecteur d'horaires `opening_hours`) |
 | `sw.js` | Mode hors connexion, cache des zones consultées |
 | `scripts/build_pharmacies.py` | Télécharge les pharmacies d'OpenStreetMap, complète les adresses (Géoplateforme IGN) et écrit des tuiles `data/p/<ligne>_<colonne>.json` (cases de 0,2°) |
 | `.github/workflows/pages.yml` | Régénère les tuiles chaque dimanche et publie sur GitHub Pages |

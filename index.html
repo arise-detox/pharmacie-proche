@@ -131,21 +131,80 @@ ul.rows{list-style:none;margin:0;padding:0}
 
 footer{max-width:640px;margin:0 auto;padding:6px max(16px,env(safe-area-inset-right)) calc(28px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));font:13px/1.55 var(--sans);color:var(--mut)}
 footer p{margin:0 0 8px;max-width:40em}
-.install{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:9;display:flex;gap:12px;align-items:center;max-width:616px;margin:0 auto;padding:12px 12px 12px 16px;border-radius:16px;background:var(--ink);color:var(--paper);font:14.5px/1.35 var(--sans);box-shadow:0 10px 30px rgba(0,0,0,.3)}
-.install span{flex:1}
-.install button{flex:none;min-height:40px;padding:0 14px;border:0;border-radius:11px;background:var(--paper);color:var(--ink);font:600 14px/1 var(--sans);cursor:pointer}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-@media (max-width:360px){.hn{font-size:24px}.act{font-size:16px}}
+/* ---- barre du haut : nom, installer, langue ---- */
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;font:600 16px/1.2 var(--serif)}
+.brand>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.xs{--u:5px}
+.tools{display:flex;align-items:center;gap:6px;flex:none}
+.pill{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 13px;border-radius:999px;border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.07);color:#eaf6ef;font:600 14px/1 var(--sans);cursor:pointer}
+.pill svg{width:17px;height:17px;flex:none}
+.pill:hover{background:rgba(255,255,255,.15)}
+.langwrap{position:relative}
+.menu{position:absolute;z-index:8;right:0;top:calc(100% + 6px);margin:0;padding:6px;list-style:none;min-width:176px;background:#f4f8f5;color:#12261e;border-radius:14px;box-shadow:0 12px 32px rgba(0,0,0,.35)}
+.menu button{display:flex;width:100%;align-items:center;justify-content:space-between;gap:12px;min-height:46px;padding:0 12px;border:0;border-radius:9px;background:transparent;color:#12261e;text-align:left;font:500 17px/1.2 var(--sans);cursor:pointer}
+.menu button:hover{background:#e7f1ea}
+.menu button[aria-checked=true]{background:#dcebe1;font-weight:700}
+.menu button[aria-checked=true]::after{content:"";flex:none;width:9px;height:9px;border-radius:50%;background:#0b9d55}
+.menu :focus-visible{outline-color:#0a7f43}
+
+/* ---- guide d'installation (feuille du bas) ---- */
+body.lock{overflow:hidden}
+.guide{position:fixed;inset:0;z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.gback{position:absolute;inset:0;background:rgba(5,18,13,.62);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+.gsheet{position:relative;width:100%;max-width:560px;max-height:calc(100vh - 14px);max-height:calc(100dvh - 14px);overflow:auto;overscroll-behavior:contain;background:var(--paper);color:var(--ink);border-radius:22px 22px 0 0;box-shadow:0 -14px 44px rgba(0,0,0,.4);outline:0;padding-bottom:env(safe-area-inset-bottom);animation:rise .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes rise{from{transform:translateY(28px);opacity:0}to{transform:none;opacity:1}}
+.ghead{position:sticky;top:0;z-index:1;display:flex;align-items:center;gap:14px;padding:18px 20px 16px;background:var(--pine);color:#eaf6ef}
+.ghead h2{margin:0;font:600 23px/1.2 var(--serif)}
+.sm2{--u:7px}
+.gbody{padding:16px 20px 22px}
+.glead{margin:0 0 16px;font:15.5px/1.5 var(--sans)}
+.glab{margin:0 0 6px;font:600 13px/1.2 var(--sans);color:var(--mut)}
+.glangs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 18px}
+.glangs .chip{padding:0 6px}
+.gtabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:0 0 16px;border-radius:14px;background:var(--line)}
+.gtab{min-height:42px;border:0;border-radius:10px;background:transparent;font:600 15px/1 var(--sans);cursor:pointer}
+.gtab[aria-selected=true]{background:var(--paper);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.gnow{width:100%;margin:0 0 16px}
+.gsteps{list-style:none;margin:0;padding:0;counter-reset:s;display:grid;gap:12px}
+.gsteps li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;font:16px/1.5 var(--sans)}
+.gsteps li::before{content:counter(s);width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--pine);color:var(--led);font:700 16px/1 var(--sans);box-shadow:0 0 0 2px rgba(53,230,140,.28)}
+.gsteps li>span{padding-top:5px}
+.gsteps b{font-weight:700}
+.gico{display:inline-grid;place-items:center;vertical-align:-6px;width:28px;height:28px;margin:0 2px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
+.gico svg{width:17px;height:17px}
+.gdesk{margin:16px 0 0;font:14px/1.5 var(--sans);color:var(--mut)}
+.gfoot{display:flex;flex-direction:column;gap:4px;margin-top:22px}
+.gfoot .act{width:100%}
+.txtbtn{min-height:46px;border:0;background:transparent;color:var(--mut);font:600 15px/1 var(--sans);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+
+/* ---- écritures non latines : une seule famille sans empattement, plus fiable que le serif du système ---- */
+html:lang(zh),html:lang(ko),html:lang(ka){--serif:var(--sans)}
+html:lang(zh) .hn,html:lang(ko) .hn,html:lang(ka) .hn,html:lang(zh) .lead,html:lang(ko) .lead,html:lang(ka) .lead{letter-spacing:0;line-height:1.28}
+html:lang(ka) .hn,html:lang(ka) .lead,html:lang(ka) .lt,html:lang(ka) .rn{font-weight:700}
+@media (max-width:360px){.hn{font-size:24px}.act{font-size:16px}.pill{padding:0 10px}.brand{font-size:15px}}
+@media (max-width:359px){#guide-open span{display:none}#guide-open{padding:0 11px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <header class="board">
   <div class="in">
+    <div class="top">
+      <span class="brand"><span class="cross lit xs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span data-i18n="title">Pharmacie proche</span></span>
+      <div class="tools">
+        <button id="guide-open" class="pill" type="button" data-i18n-aria="installBtn" aria-label="Installer" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5"/><path d="M5 19h14"/></svg><span data-i18n="installBtn">Installer</span></button>
+        <div class="langwrap">
+          <button id="lang-btn" class="pill" type="button" aria-haspopup="true" aria-expanded="false" data-i18n-aria="langTitle" aria-label="Langue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.6 3.9 5.6 3.9 9s-1.3 6.4-3.9 9c-2.6-2.6-3.9-5.6-3.9-9S9.4 5.6 12 3z"/></svg><span id="lang-cur">FR</span></button>
+          <ul id="lang-menu" class="menu" role="menu" hidden></ul>
+        </div>
+      </div>
+    </div>
     <form id="f" class="sf" role="search" autocomplete="off">
-      <label class="sr" for="q">Ville, adresse ou code postal</label>
-      <input id="q" type="search" placeholder="Ville, adresse ou code postal" enterkeyhint="search" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="sug">
-      <button id="loc" class="locbtn" type="button" aria-label="Utiliser ma position" aria-busy="false">
+      <label class="sr" for="q" data-i18n="searchPh">Ville, adresse ou code postal</label>
+      <input id="q" type="search" placeholder="Ville, adresse ou code postal" data-i18n-ph="searchPh" enterkeyhint="search" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="sug">
+      <button id="loc" class="locbtn" type="button" aria-label="Utiliser ma position" data-i18n-aria="locAria" aria-busy="false">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2" fill="currentColor"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
       </button>
       <ul id="sug" class="sug" role="listbox" hidden></ul>
@@ -159,11 +218,600 @@ footer p{margin:0 0 8px;max-width:40em}
   <div id="garde-bottom"></div>
 </main>
 <footer>
-  <p>Les horaires viennent d'OpenStreetMap et peuvent être périmés ou incomplets: appelez avant de vous déplacer.</p>
-  <p><span id="meta"></span>Données © contributeurs <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (licence ODbL). Adresses: Géoplateforme IGN.</p>
-  <p>Votre position reste sur votre téléphone. Seule la zone de recherche (environ 20 km) est demandée au site, et le texte saisi dans la barre de recherche part vers le service d'adresses de l'IGN.</p>
+  <p data-i18n="foot1">Les horaires viennent d'OpenStreetMap et peuvent être périmés ou incomplets: appelez avant de vous déplacer.</p>
+  <p><span id="meta"></span><span data-i18n-html="foot2">Données © contributeurs <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (licence ODbL). Adresses: Géoplateforme IGN.</span></p>
+  <p data-i18n="foot3">Votre position reste sur votre téléphone. Seule la zone de recherche (environ 20 km) est demandée au site, et le texte saisi dans la barre de recherche part vers le service d'adresses de l'IGN.</p>
 </footer>
-<div id="install" class="install" hidden><span>Pour l'installer: touchez Partager dans Safari, puis « Sur l'écran d'accueil ».</span><button id="install-x" type="button">Fermer</button></div>
+<div id="guide" class="guide" hidden>
+  <div class="gback"></div>
+  <section class="gsheet" role="dialog" aria-modal="true" aria-labelledby="g-title" tabindex="-1">
+    <div class="ghead"><span class="cross lit sm2" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><h2 id="g-title">Installer l'appli</h2></div>
+    <div class="gbody">
+      <p id="g-lead" class="glead"></p>
+      <p id="g-langs-l" class="glab">Langue</p>
+      <div id="g-langs" class="chips glangs" role="group" aria-labelledby="g-langs-l"></div>
+      <div class="gtabs" role="tablist">
+        <button id="tab-ios" class="gtab" type="button" role="tab" aria-controls="g-steps">iPhone</button>
+        <button id="tab-android" class="gtab" type="button" role="tab" aria-controls="g-steps">Android</button>
+      </div>
+      <button id="g-now" class="act p gnow" type="button" hidden>Installer maintenant</button>
+      <ol id="g-steps" class="gsteps" role="tabpanel"></ol>
+      <p id="g-desk" class="gdesk"></p>
+      <div class="gfoot"><button id="g-close" class="act p" type="button">Fermer</button><button id="g-never" class="txtbtn" type="button">Ne plus afficher</button></div>
+    </div>
+  </section>
+</div>
+<script>
+/* Langues de l'appli : français, anglais, russe, géorgien, chinois (simplifié), coréen.
+   Le français est la langue de référence : toute clé absente ailleurs retombe sur lui.
+   Les valeurs « html » (urg, foot2, ios*, and*) contiennent du balisage écrit ici ; toutes les autres sont du texte brut. */
+(function (root, factory) {
+  var api = factory();
+  if (typeof module === "object" && module.exports) module.exports = api; else root.I18N = api;
+})(this, function () {
+  "use strict";
+
+  var LANGS = [
+    { c: "fr", n: "Français", s: "FR", html: "fr", loc: "fr-FR" },
+    { c: "en", n: "English", s: "EN", html: "en", loc: "en-GB" },
+    { c: "ru", n: "Русский", s: "RU", html: "ru", loc: "ru-RU" },
+    { c: "ka", n: "ქართული", s: "KA", html: "ka", loc: "ka-GE" },
+    { c: "zh", n: "中文", s: "中文", html: "zh-Hans", loc: "zh-CN" },
+    { c: "ko", n: "한국어", s: "한국어", html: "ko", loc: "ko-KR" }
+  ];
+
+  function pad2(n) { return (n < 10 ? "0" : "") + n; }
+  function T24(h, mm) { return pad2(h) + ":" + pad2(mm); }
+  function ruOne(n) { n = Math.abs(n); return n % 10 === 1 && n % 100 !== 11; }
+
+  /* ---------- textes des horaires (branchés dans OH.setPack) ---------- */
+  var PACKS = {
+    en: {
+      dayOn: ["on Monday", "on Tuesday", "on Wednesday", "on Thursday", "on Friday", "on Saturday", "on Sunday"],
+      dayLabels: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      tomorrow: "tomorrow", today: "Today", midnight: "midnight", fmtTime: T24,
+      open24: "Open 24 hours", openMid: "Open until midnight",
+      openUntil: function (t, d) { return "Open until " + t + (d ? " " + d : ""); },
+      soon: function (n) { return "Closes in " + n + " min"; },
+      opening: function (n) { return "Opens in " + n + " min"; },
+      closed: "Closed",
+      closedOpens: function (t, d) { return "Closed, opens " + (d ? d + " " : "") + "at " + t; },
+      unknown: "Hours unknown",
+      holidays: { newyear: "New Year's Day", labour: "Labour Day", victory: "Victory in Europe Day", national: "Bastille Day",
+        assumption: "Assumption", allsaints: "All Saints' Day", armistice: "Armistice Day", christmas: "Christmas Day",
+        eastermon: "Easter Monday", ascension: "Ascension Day", whitmon: "Whit Monday" }
+    },
+    ru: {
+      dayOn: ["в понедельник", "во вторник", "в среду", "в четверг", "в пятницу", "в субботу", "в воскресенье"],
+      dayLabels: ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"],
+      tomorrow: "завтра", today: "Сегодня", midnight: "00:00", fmtTime: T24,
+      open24: "Открыта круглосуточно", openMid: "Открыта до полуночи",
+      openUntil: function (t, d) { return "Открыта до " + t + (d ? " (" + d + ")" : ""); },
+      soon: function (n) { return "Закроется через " + n + " мин"; },
+      opening: function (n) { return "Откроется через " + n + " мин"; },
+      closed: "Закрыта",
+      closedOpens: function (t, d) { return "Закрыта, откроется " + (d ? d + " " : "") + "в " + t; },
+      unknown: "Часы работы неизвестны",
+      holidays: { newyear: "Новый год", labour: "День труда", victory: "День Победы 1945 года", national: "Национальный праздник Франции",
+        assumption: "Успение", allsaints: "День всех святых", armistice: "День перемирия", christmas: "Рождество",
+        eastermon: "Пасхальный понедельник", ascension: "Вознесение", whitmon: "Понедельник Пятидесятницы" }
+    },
+    ka: {
+      dayOn: ["ორშაბათს", "სამშაბათს", "ოთხშაბათს", "ხუთშაბათს", "პარასკევს", "შაბათს", "კვირას"],
+      dayLabels: ["ორშაბათი", "სამშაბათი", "ოთხშაბათი", "ხუთშაბათი", "პარასკევი", "შაბათი", "კვირა"],
+      tomorrow: "ხვალ", today: "დღეს", midnight: "00:00", fmtTime: T24,
+      open24: "ღიაა მთელი დღე-ღამე", openMid: "ღიაა შუაღამემდე",
+      openUntil: function (t, d) { return "ღიაა " + (d ? d + " " : "") + t + "-მდე"; },
+      soon: function (n) { return "იკეტება " + n + " წუთში"; },
+      opening: function (n) { return "იხსნება " + n + " წუთში"; },
+      closed: "დაკეტილია",
+      closedOpens: function (t, d) { return "დაკეტილია, იხსნება " + (d ? d + " " : "") + t + "-ზე"; },
+      unknown: "სამუშაო საათები უცნობია",
+      holidays: { newyear: "ახალი წელი", labour: "შრომის დღე", victory: "გამარჯვების დღე (1945)", national: "საფრანგეთის ეროვნული დღესასწაული",
+        assumption: "მარიამობა", allsaints: "ყველა წმინდანის დღე", armistice: "ზავის დღე", christmas: "შობა",
+        eastermon: "აღდგომის ორშაბათი", ascension: "ამაღლება", whitmon: "სულთმოფენობის ორშაბათი" }
+    },
+    zh: {
+      dayOn: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
+      dayLabels: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
+      tomorrow: "明天", today: "今天", midnight: "00:00", fmtTime: T24,
+      open24: "24 小时营业", openMid: "营业至午夜",
+      openUntil: function (t, d) { return "营业至" + (d || "") + " " + t; },
+      soon: function (n) { return n + " 分钟后打烊"; },
+      opening: function (n) { return n + " 分钟后开门"; },
+      closed: "已关门",
+      closedOpens: function (t, d) { return "已关门，" + (d ? d + " " : "") + t + " 开门"; },
+      unknown: "营业时间未知",
+      holidays: { newyear: "元旦", labour: "劳动节", victory: "1945 年胜利日", national: "法国国庆日",
+        assumption: "圣母升天节", allsaints: "诸圣节", armistice: "停战纪念日", christmas: "圣诞节",
+        eastermon: "复活节星期一", ascension: "耶稣升天节", whitmon: "圣灵降临节星期一" }
+    },
+    ko: {
+      dayOn: ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"],
+      dayLabels: ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"],
+      tomorrow: "내일", today: "오늘", midnight: "자정", fmtTime: T24,
+      open24: "24시간 영업", openMid: "자정까지 영업",
+      openUntil: function (t, d) { return (d ? d + " " : "") + t + "까지 영업"; },
+      soon: function (n) { return n + "분 후 영업 종료"; },
+      opening: function (n) { return n + "분 후 영업 시작"; },
+      closed: "영업 종료",
+      closedOpens: function (t, d) { return "영업 종료, " + (d ? d + " " : "") + t + "에 영업 시작"; },
+      unknown: "영업시간 정보 없음",
+      holidays: { newyear: "새해 첫날", labour: "노동절", victory: "1945년 전승 기념일", national: "프랑스 국경일",
+        assumption: "성모 승천 대축일", allsaints: "모든 성인 대축일", armistice: "휴전 기념일", christmas: "성탄절",
+        eastermon: "부활절 월요일", ascension: "예수 승천 대축일", whitmon: "성령강림절 월요일" }
+    }
+  };
+
+  /* ---------- textes de l'interface ---------- */
+  var D = {};
+
+  D.fr = {
+    title: "Pharmacie proche", appTitle: "Pharmacie",
+    desc: "Trouvez la pharmacie ouverte la plus proche, appelez-la et lancez l'itinéraire en un geste.",
+    langTitle: "Langue", installBtn: "Installer",
+    searchPh: "Ville, adresse ou code postal", locAria: "Utiliser ma position",
+    foot1: "Les horaires viennent d'OpenStreetMap et peuvent être périmés ou incomplets: appelez avant de vous déplacer.",
+    foot2: 'Données © contributeurs <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (licence ODbL). Adresses: Géoplateforme IGN.',
+    foot3: "Votre position reste sur votre téléphone. Seule la zone de recherche (environ 20 km) est demandée au site, et le texte saisi dans la barre de recherche part vers le service d'adresses de l'IGN.",
+    dec: ",", unitM: " m", unitKm: " km",
+    agoNow: "à l'instant", agoMin: "il y a {n} min", agoH: "il y a {n} h", agoD: "il y a {n} j",
+    pharmacy: "Pharmacie",
+    noticeLive: "Résultats en direct depuis OpenStreetMap.",
+    noticeOffline: "Hors connexion: résultats de la dernière recherche{ago}. Les horaires restent calculés à l'heure actuelle.",
+    noticeNet: "Réseau indisponible: résultats de la dernière recherche{ago}. Les horaires restent calculés à l'heure actuelle.",
+    errOffline: "Pas de connexion et aucune recherche enregistrée. Reconnectez-vous une fois pour que l'appli garde la zone en mémoire.",
+    errLoad: "Impossible de charger les pharmacies. Vérifiez la connexion et réessayez.",
+    errNoGeo: "Ce navigateur ne sait pas donner la position. Saisissez une ville ci-dessus.",
+    errDenied: "La position est refusée pour cette appli. Autorisez-la dans Réglages > Confidentialité > Service de localisation, ou saisissez une ville ci-dessus.",
+    errNoPos: "Position introuvable pour le moment. Réessayez, ou saisissez une ville ci-dessus.",
+    errNoPlace: "Aucun lieu trouvé pour « {q} ». Essayez une ville ou un code postal.",
+    errAddr: "La recherche d'adresse est indisponible. Utilisez le bouton de position.",
+    myPos: "Ma position", call: "Appeler",
+    gardeAlertTitle: "Chercher une pharmacie de garde", gardeCalmTitle: "Nuit, dimanche et jours fériés",
+    gardeBody: "{reason} Les gardes ne sont pas publiées en données ouvertes: l'appli montre les horaires habituels. Le 3237 ou 3237.fr indique la pharmacie de garde du jour.",
+    call3237: "Appeler le 3237", site3237: "Ouvrir 3237.fr", gardeSmall: "pharmacie de garde",
+    urg: 'Urgence vitale: <a href="tel:15">15 (SAMU)</a> ou <a href="tel:112">112</a>.',
+    reasonHoliday: "Aujourd'hui ({h}), beaucoup de pharmacies sont fermées.",
+    reasonSunday: "C'est dimanche: la plupart des pharmacies sont fermées.",
+    reasonHour: "Il est {t}: les pharmacies de journée sont fermées.",
+    reasonNoOpen: "Aucune pharmacie ouverte trouvée près de vous d'après les horaires habituels.",
+    reasonDefault: "Les pharmacies de garde assurent les urgences en dehors des horaires habituels.",
+    leadFind: "Trouvez la pharmacie ouverte la plus proche",
+    subFind: "Appel et itinéraire en un geste. Votre position reste sur votre téléphone.",
+    usePos: "Utiliser ma position",
+    searching: "Recherche en cours",
+    searchingNear: "Je regarde les pharmacies autour de {where}.",
+    searchingYou: "Je regarde les pharmacies autour de vous.",
+    nothing: "Rien à afficher",
+    nearestOpen: "Ouverte la plus proche", go: "Y aller",
+    noneOpen: "Aucune pharmacie ouverte trouvée",
+    noneOpenSub: "Dans un rayon de {r} km, toutes les pharmacies sont fermées d'après leurs horaires habituels. Une pharmacie de garde est peut-être ouverte: appelez le 3237.",
+    noneFound: "Aucune pharmacie trouvée",
+    noneFoundSub: "Aucune pharmacie dans la base à moins de {r} km. Essayez une ville proche.",
+    others: "Autres pharmacies", nearby: "Pharmacies proches", filterAria: "Filtre",
+    chipOpen: "Ouvertes {n}", chipAll: "Toutes {n}",
+    noOtherOpen: "Aucune autre pharmacie ouverte dans un rayon de {r} km.",
+    tapAll: " Touchez « Toutes » pour voir les horaires de réouverture.",
+    nothingElse: "Rien d'autre dans la zone.",
+    more: "Afficher {n} de plus",
+    unkNote: function (p) { return p.n + (p.n > 1 ? " pharmacies n'ont" : " pharmacie n'a") + " pas d'horaires connus: elles sont dans « Toutes ». Appelez avant de vous déplacer."; },
+    metaBase: "Base du {date}, {n} pharmacies. ",
+    callAria: "Appeler {name}", routeAria: "Itinéraire vers {name}",
+    holidayTag: "{name} (jour férié)",
+    ohRaw: "Horaires indiqués dans OpenStreetMap: {h}. Format non reconnu, appelez pour confirmer.",
+    noHours: "Cette pharmacie n'a pas d'horaires dans OpenStreetMap.",
+    verified: "Horaires vérifiés le {d}.",
+    site: "Site de la pharmacie", fixOsm: "Corriger sur OpenStreetMap",
+    guideTitle: "Installer l'appli",
+    guideLead: "Ajoutez « {app} » à votre écran d'accueil: elle s'ouvre en plein écran comme une vraie appli, et les zones déjà vues restent disponibles sans réseau.",
+    tabIos: "iPhone", tabAndroid: "Android",
+    ios1: "Ouvrez ce site dans <b>Safari</b>.",
+    ios2: "Touchez <b>Partager</b> {share} en bas de l'écran (en haut sur iPad).",
+    ios3: "Faites défiler et touchez <b>Sur l'écran d'accueil</b>.",
+    ios4: "Touchez <b>Ajouter</b>. L'icône apparaît avec vos autres applis.",
+    and1: "Ouvrez ce site dans <b>Chrome</b>.",
+    and2: "Touchez le menu {menu} en haut à droite.",
+    and3: "Touchez <b>Installer l'application</b> (ou <b>Ajouter à l'écran d'accueil</b>).",
+    and4: "Confirmez avec <b>Installer</b>.",
+    guideDesk: "Sur ordinateur (Chrome ou Edge): cliquez sur l'icône d'installation à droite de la barre d'adresse.",
+    guideNow: "Installer maintenant", guideClose: "Fermer", guideNever: "Ne plus afficher"
+  };
+
+  D.en = {
+    title: "Nearest pharmacy", appTitle: "Pharmacy",
+    desc: "Find the nearest open pharmacy in France, call it and get directions in one tap.",
+    langTitle: "Language", installBtn: "Install",
+    searchPh: "City, address or postcode (France)", locAria: "Use my location",
+    foot1: "Opening hours come from OpenStreetMap and may be out of date or incomplete: call before you go.",
+    foot2: 'Data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors (ODbL licence). Addresses: Géoplateforme IGN.',
+    foot3: "Your location stays on your phone. The site only receives the search area (about 20 km), and the text you type in the search bar goes to the IGN address service.",
+    dec: ".", unitM: " m", unitKm: " km",
+    agoNow: "just now", agoMin: "{n} min ago", agoH: "{n} h ago", agoD: "{n} d ago",
+    pharmacy: "Pharmacy",
+    noticeLive: "Live results from OpenStreetMap.",
+    noticeOffline: "Offline: showing results from your last search{ago}. Hours are still calculated for the current time.",
+    noticeNet: "Network unavailable: showing results from your last search{ago}. Hours are still calculated for the current time.",
+    errOffline: "No connection and no saved search. Reconnect once so the app can keep the area in memory.",
+    errLoad: "Couldn't load pharmacies. Check your connection and try again.",
+    errNoGeo: "This browser can't give your location. Type a city above.",
+    errDenied: "Location is blocked for this app. Allow it in Settings > Privacy > Location Services, or type a city above.",
+    errNoPos: "Location not available right now. Try again, or type a city above.",
+    errNoPlace: "No place found for “{q}”. Try a city or postcode in France.",
+    errAddr: "Address search is unavailable. Use the location button.",
+    myPos: "My location", call: "Call",
+    gardeAlertTitle: "Find an on-duty pharmacy", gardeCalmTitle: "Nights, Sundays and public holidays",
+    gardeBody: "{reason} On-duty rotas aren't published as open data: the app shows usual opening hours. Call 3237 or visit 3237.fr to find today's on-duty pharmacy.",
+    call3237: "Call 3237", site3237: "Open 3237.fr", gardeSmall: "on-duty pharmacy",
+    urg: 'Life-threatening emergency: <a href="tel:15">15 (SAMU)</a> or <a href="tel:112">112</a>.',
+    reasonHoliday: "Today ({h}), many pharmacies are closed.",
+    reasonSunday: "It's Sunday: most pharmacies are closed.",
+    reasonHour: "It's {t}: daytime pharmacies are closed.",
+    reasonNoOpen: "No open pharmacy found near you based on usual opening hours.",
+    reasonDefault: "On-duty pharmacies handle emergencies outside usual opening hours.",
+    leadFind: "Find the nearest open pharmacy",
+    subFind: "Call and get directions in one tap. Your location stays on your phone.",
+    usePos: "Use my location",
+    searching: "Searching",
+    searchingNear: "Looking at pharmacies around {where}.",
+    searchingYou: "Looking at pharmacies around you.",
+    nothing: "Nothing to show",
+    nearestOpen: "Nearest open pharmacy", go: "Directions",
+    noneOpen: "No open pharmacy found",
+    noneOpenSub: "Within {r} km, all pharmacies are closed according to their usual hours. An on-duty pharmacy may be open: call 3237.",
+    noneFound: "No pharmacy found",
+    noneFoundSub: "No pharmacy in the database within {r} km. Try a nearby city.",
+    others: "Other pharmacies", nearby: "Nearby pharmacies", filterAria: "Filter",
+    chipOpen: "Open {n}", chipAll: "All {n}",
+    noOtherOpen: "No other open pharmacy within {r} km.",
+    tapAll: " Tap “All” to see when they reopen.",
+    nothingElse: "Nothing else in the area.",
+    more: "Show {n} more",
+    unkNote: function (p) { return p.n + (p.n > 1 ? " pharmacies have" : " pharmacy has") + " no known hours: they are under “All”. Call before you go."; },
+    metaBase: "Database from {date}, {n} pharmacies. ",
+    callAria: "Call {name}", routeAria: "Directions to {name}",
+    holidayTag: "{name} (public holiday)",
+    ohRaw: "Hours listed in OpenStreetMap: {h}. Format not recognised, call to confirm.",
+    noHours: "This pharmacy has no hours in OpenStreetMap.",
+    verified: "Hours checked on {d}.",
+    site: "Pharmacy website", fixOsm: "Fix on OpenStreetMap",
+    guideTitle: "Install the app",
+    guideLead: "Add “{app}” to your home screen: it opens full screen like a regular app, and areas you've already viewed stay available offline.",
+    tabIos: "iPhone", tabAndroid: "Android",
+    ios1: "Open this site in <b>Safari</b>.",
+    ios2: "Tap <b>Share</b> {share} at the bottom of the screen (at the top on iPad).",
+    ios3: "Scroll down and tap <b>Add to Home Screen</b>.",
+    ios4: "Tap <b>Add</b>. The icon appears with your other apps.",
+    and1: "Open this site in <b>Chrome</b>.",
+    and2: "Tap the menu {menu} at the top right.",
+    and3: "Tap <b>Install app</b> (or <b>Add to Home screen</b>).",
+    and4: "Confirm with <b>Install</b>.",
+    guideDesk: "On a computer (Chrome or Edge): click the install icon at the right end of the address bar.",
+    guideNow: "Install now", guideClose: "Close", guideNever: "Don't show again"
+  };
+
+  D.ru = {
+    title: "Аптека рядом", appTitle: "Аптека",
+    desc: "Найдите ближайшую открытую аптеку во Франции, позвоните и проложите маршрут одним касанием.",
+    langTitle: "Язык", installBtn: "Установить",
+    searchPh: "Город, адрес или индекс (Франция)", locAria: "Использовать мою геопозицию",
+    foot1: "Часы работы взяты из OpenStreetMap и могут быть устаревшими или неполными: позвоните, прежде чем идти.",
+    foot2: 'Данные © участники <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> (лицензия ODbL). Адреса: Géoplateforme IGN.',
+    foot3: "Ваше местоположение остаётся на телефоне. Сайт получает только зону поиска (около 20 км), а текст из строки поиска отправляется в адресный сервис IGN.",
+    dec: ",", unitM: " м", unitKm: " км",
+    agoNow: "только что", agoMin: "{n} мин назад", agoH: "{n} ч назад", agoD: "{n} дн. назад",
+    pharmacy: "Аптека",
+    noticeLive: "Результаты получены напрямую из OpenStreetMap.",
+    noticeOffline: "Нет соединения: показаны результаты последнего поиска{ago}. Часы работы пересчитаны на текущее время.",
+    noticeNet: "Сеть недоступна: показаны результаты последнего поиска{ago}. Часы работы пересчитаны на текущее время.",
+    errOffline: "Нет соединения, и нет сохранённых поисков. Подключитесь к интернету один раз, чтобы приложение запомнило район.",
+    errLoad: "Не удалось загрузить аптеки. Проверьте соединение и повторите попытку.",
+    errNoGeo: "Этот браузер не умеет определять местоположение. Введите город выше.",
+    errDenied: "Доступ к геопозиции для приложения запрещён. Разрешите его в Настройки > Конфиденциальность > Службы геолокации или введите город выше.",
+    errNoPos: "Пока не удаётся определить местоположение. Повторите попытку или введите город выше.",
+    errNoPlace: "Ничего не найдено по запросу «{q}». Попробуйте город или индекс во Франции латиницей (например, Paris).",
+    errAddr: "Поиск адреса недоступен. Используйте кнопку геопозиции.",
+    myPos: "Моя геопозиция", call: "Позвонить",
+    gardeAlertTitle: "Найти дежурную аптеку", gardeCalmTitle: "Ночь, воскресенье и праздники",
+    gardeBody: "{reason} Графики дежурств не публикуются как открытые данные: приложение показывает обычные часы работы. Номер 3237 или сайт 3237.fr подскажет дежурную аптеку на сегодня.",
+    call3237: "Позвонить на 3237", site3237: "Открыть 3237.fr", gardeSmall: "дежурная аптека",
+    urg: 'Угроза жизни: <a href="tel:15">15 (SAMU)</a> или <a href="tel:112">112</a>.',
+    reasonHoliday: "Сегодня ({h}) многие аптеки закрыты.",
+    reasonSunday: "Сегодня воскресенье: большинство аптек закрыто.",
+    reasonHour: "Сейчас {t}: дневные аптеки закрыты.",
+    reasonNoOpen: "Рядом нет открытых аптек по обычному графику.",
+    reasonDefault: "Дежурные аптеки принимают срочные случаи вне обычных часов работы.",
+    leadFind: "Найдите ближайшую открытую аптеку",
+    subFind: "Звонок и маршрут одним касанием. Ваше местоположение остаётся на телефоне.",
+    usePos: "Использовать мою геопозицию",
+    searching: "Идёт поиск",
+    searchingNear: "Ищу аптеки рядом: {where}.",
+    searchingYou: "Ищу аптеки рядом с вами.",
+    nothing: "Нечего показать",
+    nearestOpen: "Ближайшая открытая", go: "Маршрут",
+    noneOpen: "Открытых аптек не найдено",
+    noneOpenSub: "В радиусе {r} км все аптеки закрыты по обычному графику. Дежурная аптека может быть открыта: позвоните на 3237.",
+    noneFound: "Аптек не найдено",
+    noneFoundSub: "В базе нет аптек ближе {r} км. Попробуйте ближайший город.",
+    others: "Другие аптеки", nearby: "Ближайшие аптеки", filterAria: "Фильтр",
+    chipOpen: "Открыты {n}", chipAll: "Все {n}",
+    noOtherOpen: "Других открытых аптек в радиусе {r} км нет.",
+    tapAll: " Нажмите «Все», чтобы увидеть, когда они откроются.",
+    nothingElse: "В этом районе больше ничего нет.",
+    more: "Показать ещё {n}",
+    unkNote: function (p) { return "Часы работы неизвестны у " + p.n + (ruOne(p.n) ? " аптеки" : " аптек") + ": они в разделе «Все». Позвоните, прежде чем идти."; },
+    metaBase: "База от {date}, аптек: {n}. ",
+    callAria: "Позвонить: {name}", routeAria: "Маршрут до: {name}",
+    holidayTag: "{name} (праздничный день)",
+    ohRaw: "Часы работы в OpenStreetMap: {h}. Формат не распознан, позвоните для уточнения.",
+    noHours: "У этой аптеки нет часов работы в OpenStreetMap.",
+    verified: "Часы работы проверены: {d}.",
+    site: "Сайт аптеки", fixOsm: "Исправить в OpenStreetMap",
+    guideTitle: "Установка приложения",
+    guideLead: "Добавьте «{app}» на главный экран: она откроется на весь экран, как обычное приложение, а уже просмотренные районы будут работать без интернета.",
+    tabIos: "iPhone", tabAndroid: "Android",
+    ios1: "Откройте этот сайт в <b>Safari</b>.",
+    ios2: "Нажмите <b>Поделиться</b> {share} внизу экрана (на iPad — вверху).",
+    ios3: "Прокрутите вниз и нажмите <b>На экран «Домой»</b>.",
+    ios4: "Нажмите <b>Добавить</b>. Значок появится среди остальных приложений.",
+    and1: "Откройте этот сайт в <b>Chrome</b>.",
+    and2: "Нажмите меню {menu} в правом верхнем углу.",
+    and3: "Нажмите <b>Установить приложение</b> (или <b>Добавить на главный экран</b>).",
+    and4: "Подтвердите кнопкой <b>Установить</b>.",
+    guideDesk: "На компьютере (Chrome или Edge): нажмите значок установки справа в адресной строке.",
+    guideNow: "Установить сейчас", guideClose: "Закрыть", guideNever: "Больше не показывать"
+  };
+
+  D.ka = {
+    title: "აფთიაქი ახლოს", appTitle: "აფთიაქი",
+    desc: "იპოვეთ უახლოესი ღია აფთიაქი საფრანგეთში, დარეკეთ და მიიღეთ მარშრუტი ერთი შეხებით.",
+    langTitle: "ენა", installBtn: "დაყენება",
+    searchPh: "ქალაქი, მისამართი ან ინდექსი (საფრანგეთი)", locAria: "ჩემი მდებარეობის გამოყენება",
+    foot1: "სამუშაო საათები აღებულია OpenStreetMap-იდან და შეიძლება მოძველებული ან არასრული იყოს: წასვლამდე დარეკეთ.",
+    foot2: 'მონაცემები © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>-ის მონაწილეები (ODbL ლიცენზია). მისამართები: Géoplateforme IGN.',
+    foot3: "თქვენი მდებარეობა თქვენს ტელეფონზე რჩება. საიტი იღებს მხოლოდ ძიების ზონას (დაახლოებით 20 კმ), ხოლო საძიებო ველში აკრეფილი ტექსტი იგზავნება IGN-ის მისამართების სერვისზე.",
+    dec: ",", unitM: " მ", unitKm: " კმ",
+    agoNow: "ახლახან", agoMin: "{n} წთ-ის წინ", agoH: "{n} სთ-ის წინ", agoD: "{n} დღის წინ",
+    pharmacy: "აფთიაქი",
+    noticeLive: "შედეგები პირდაპირ OpenStreetMap-იდანაა.",
+    noticeOffline: "კავშირი არ არის: ნაჩვენებია ბოლო ძიების შედეგები{ago}. სამუშაო საათები მიმდინარე დროზეა გადათვლილი.",
+    noticeNet: "ქსელი მიუწვდომელია: ნაჩვენებია ბოლო ძიების შედეგები{ago}. სამუშაო საათები მიმდინარე დროზეა გადათვლილი.",
+    errOffline: "კავშირი არ არის და შენახული ძიება არ არსებობს. ერთხელ დაუკავშირდით ინტერნეტს, რომ აპლიკაციამ ზონა დაიმახსოვროს.",
+    errLoad: "აფთიაქების ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ კავშირი და სცადეთ ხელახლა.",
+    errNoGeo: "ამ ბრაუზერს მდებარეობის დადგენა არ შეუძლია. ზემოთ შეიყვანეთ ქალაქი.",
+    errDenied: "ამ აპლიკაციას მდებარეობაზე წვდომა აკრძალული აქვს. ჩართეთ პარამეტრებში > კონფიდენციალურობა > ადგილმდებარეობის სერვისები, ან ზემოთ შეიყვანეთ ქალაქი.",
+    errNoPos: "მდებარეობა ამჟამად ვერ დადგინდა. სცადეთ ხელახლა ან ზემოთ შეიყვანეთ ქალაქი.",
+    errNoPlace: "„{q}“ ვერ მოიძებნა. სცადეთ ქალაქი ან საფოსტო ინდექსი საფრანგეთში, ლათინური ასოებით (მაგ., Paris).",
+    errAddr: "მისამართის ძიება მიუწვდომელია. გამოიყენეთ მდებარეობის ღილაკი.",
+    myPos: "ჩემი მდებარეობა", call: "დარეკვა",
+    gardeAlertTitle: "მოძებნეთ მორიგე აფთიაქი", gardeCalmTitle: "ღამე, კვირა და უქმე დღეები",
+    gardeBody: "{reason} მორიგეობის გრაფიკი ღია მონაცემებად არ ქვეყნდება: აპლიკაცია აჩვენებს ჩვეულებრივ სამუშაო საათებს. 3237-ზე დარეკვით ან 3237.fr-ზე გაიგებთ დღევანდელ მორიგე აფთიაქს.",
+    call3237: "დარეკვა 3237-ზე", site3237: "3237.fr-ის გახსნა", gardeSmall: "მორიგე აფთიაქი",
+    urg: 'სიცოცხლისთვის საშიში საგანგებო შემთხვევა: <a href="tel:15">15 (SAMU)</a> ან <a href="tel:112">112</a>.',
+    reasonHoliday: "დღეს ({h}) ბევრი აფთიაქი დაკეტილია.",
+    reasonSunday: "დღეს კვირაა: აფთიაქების უმეტესობა დაკეტილია.",
+    reasonHour: "ახლა {t} არის: დღის აფთიაქები დაკეტილია.",
+    reasonNoOpen: "ჩვეულებრივი სამუშაო საათების მიხედვით, თქვენს მახლობლად ღია აფთიაქი ვერ მოიძებნა.",
+    reasonDefault: "მორიგე აფთიაქები გადაუდებელ შემთხვევებს ემსახურებიან ჩვეულებრივი სამუშაო საათების გარეთ.",
+    leadFind: "იპოვეთ უახლოესი ღია აფთიაქი",
+    subFind: "დარეკვა და მარშრუტი ერთი შეხებით. თქვენი მდებარეობა თქვენს ტელეფონზე რჩება.",
+    usePos: "ჩემი მდებარეობის გამოყენება",
+    searching: "ძიება მიმდინარეობს",
+    searchingNear: "ვეძებ აფთიაქებს ახლოს: {where}.",
+    searchingYou: "ვეძებ აფთიაქებს თქვენს მახლობლად.",
+    nothing: "საჩვენებელი არაფერია",
+    nearestOpen: "უახლოესი ღია აფთიაქი", go: "მარშრუტი",
+    noneOpen: "ღია აფთიაქი ვერ მოიძებნა",
+    noneOpenSub: "{r} კმ რადიუსში ყველა აფთიაქი დაკეტილია ჩვეულებრივი სამუშაო საათების მიხედვით. მორიგე აფთიაქი შეიძლება ღია იყოს: დარეკეთ 3237-ზე.",
+    noneFound: "აფთიაქი ვერ მოიძებნა",
+    noneFoundSub: "ბაზაში {r} კმ-ის ფარგლებში აფთიაქი არ არის. სცადეთ ახლომდებარე ქალაქი.",
+    others: "სხვა აფთიაქები", nearby: "ახლომდებარე აფთიაქები", filterAria: "ფილტრი",
+    chipOpen: "ღია {n}", chipAll: "ყველა {n}",
+    noOtherOpen: "{r} კმ რადიუსში სხვა ღია აფთიაქი არ არის.",
+    tapAll: " შეეხეთ „ყველა“-ს, რომ ნახოთ, როდის გაიხსნება.",
+    nothingElse: "ამ ზონაში სხვა არაფერია.",
+    more: "კიდევ {n}-ის ჩვენება",
+    unkNote: function (p) { return p.n + " აფთიაქს არ აქვს ცნობილი სამუშაო საათები: ისინი განყოფილებაში „ყველა“. წასვლამდე დარეკეთ."; },
+    metaBase: "ბაზა: {date}, აფთიაქების რაოდენობა: {n}. ",
+    callAria: "დარეკვა: {name}", routeAria: "მარშრუტი: {name}",
+    holidayTag: "{name} (უქმე დღე)",
+    ohRaw: "სამუშაო საათები OpenStreetMap-ში: {h}. ფორმატი ვერ ამოვიცანი, დარეკეთ დასაზუსტებლად.",
+    noHours: "ამ აფთიაქს OpenStreetMap-ში სამუშაო საათები არ აქვს.",
+    verified: "სამუშაო საათები შემოწმებულია: {d}.",
+    site: "აფთიაქის საიტი", fixOsm: "შესწორება OpenStreetMap-ზე",
+    guideTitle: "აპლიკაციის დაყენება",
+    guideLead: "დაამატეთ „{app}“ მთავარ ეკრანზე: ის გაიხსნება მთელ ეკრანზე, როგორც ჩვეულებრივი აპლიკაცია, ხოლო უკვე ნანახი ზონები ინტერნეტის გარეშეც ხელმისაწვდომი დარჩება.",
+    tabIos: "iPhone", tabAndroid: "Android",
+    ios1: "გახსენით ეს საიტი <b>Safari</b>-ში.",
+    ios2: "შეეხეთ ღილაკს <b>გაზიარება</b> {share} ეკრანის ქვედა ნაწილში (iPad-ზე — ზედა ნაწილში).",
+    ios3: "ჩამოსქროლეთ და შეეხეთ ღილაკს <b>მთავარ ეკრანზე დამატება</b>.",
+    ios4: "შეეხეთ ღილაკს <b>დამატება</b>. ხატულა გამოჩნდება დანარჩენ აპლიკაციებთან ერთად.",
+    and1: "გახსენით ეს საიტი <b>Chrome</b>-ში.",
+    and2: "შეეხეთ მენიუს {menu} ზედა მარჯვენა კუთხეში.",
+    and3: "შეეხეთ <b>აპის ინსტალაცია</b> (ან <b>მთავარ ეკრანზე დამატება</b>).",
+    and4: "დაადასტურეთ ღილაკით <b>ინსტალაცია</b>.",
+    guideDesk: "კომპიუტერზე (Chrome ან Edge): დააწკაპუნეთ ინსტალაციის ხატულაზე მისამართის ზოლის მარჯვენა ბოლოში.",
+    guideNow: "ახლავე დაყენება", guideClose: "დახურვა", guideNever: "აღარ მაჩვენო"
+  };
+
+  D.zh = {
+    title: "附近药店", appTitle: "药店",
+    desc: "找到法国最近的营业中药店，一键拨打电话并导航。",
+    langTitle: "语言", installBtn: "安装",
+    searchPh: "城市、地址或邮编（法国）", locAria: "使用我的位置",
+    foot1: "营业时间来自 OpenStreetMap，可能已过时或不完整，出发前请先电话确认。",
+    foot2: '数据 © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> 贡献者（ODbL 许可）。地址：Géoplateforme IGN。',
+    foot3: "您的位置只保留在手机上。网站只会收到搜索区域（约 20 公里），搜索栏中输入的文字会发送到 IGN 的地址服务。",
+    dec: ".", unitM: " 米", unitKm: " 公里",
+    agoNow: "刚刚", agoMin: "{n} 分钟前", agoH: "{n} 小时前", agoD: "{n} 天前",
+    pharmacy: "药店",
+    noticeLive: "结果直接来自 OpenStreetMap。",
+    noticeOffline: "无网络连接：显示上次搜索的结果{ago}。营业状态按当前时间重新计算。",
+    noticeNet: "网络不可用：显示上次搜索的结果{ago}。营业状态按当前时间重新计算。",
+    errOffline: "没有网络连接，也没有已保存的搜索。请联网一次，应用才能记住该区域。",
+    errLoad: "无法加载药店。请检查网络后重试。",
+    errNoGeo: "此浏览器无法获取位置。请在上方输入城市。",
+    errDenied: "此应用的定位权限被拒绝。请在“设置 > 隐私 > 定位服务”中允许，或在上方输入城市。",
+    errNoPos: "暂时无法获取位置。请重试，或在上方输入城市。",
+    errNoPlace: "找不到“{q}”。请试试法国的城市或邮政编码，并使用拉丁字母（如 Paris）。",
+    errAddr: "地址搜索暂不可用。请使用定位按钮。",
+    myPos: "我的位置", call: "拨打电话",
+    gardeAlertTitle: "查找值班药店", gardeCalmTitle: "夜间、周日及公共假日",
+    gardeBody: "{reason}值班药店名单没有以开放数据发布，本应用显示的是常规营业时间。拨打 3237 或访问 3237.fr 可查询当天的值班药店。",
+    call3237: "拨打 3237", site3237: "打开 3237.fr", gardeSmall: "值班药店",
+    urg: '危及生命的紧急情况：<a href="tel:15">15（SAMU）</a>或 <a href="tel:112">112</a>。',
+    reasonHoliday: "今天（{h}）很多药店不营业。",
+    reasonSunday: "今天是周日，大多数药店不营业。",
+    reasonHour: "现在是 {t}，日间药店已关门。",
+    reasonNoOpen: "按常规营业时间，附近没有找到营业中的药店。",
+    reasonDefault: "常规营业时间之外，值班药店负责处理紧急需求。",
+    leadFind: "找到最近的营业中药店",
+    subFind: "一键拨打电话和导航。您的位置只保留在手机上。",
+    usePos: "使用我的位置",
+    searching: "正在搜索",
+    searchingNear: "正在查看 {where} 附近的药店。",
+    searchingYou: "正在查看您附近的药店。",
+    nothing: "没有可显示的内容",
+    nearestOpen: "最近的营业中药店", go: "导航",
+    noneOpen: "没有找到营业中的药店",
+    noneOpenSub: "{r} 公里范围内，按常规营业时间所有药店都已关门。值班药店可能仍在营业，请拨打 3237。",
+    noneFound: "没有找到药店",
+    noneFoundSub: "数据库中 {r} 公里内没有药店。请试试附近的城市。",
+    others: "其他药店", nearby: "附近药店", filterAria: "筛选",
+    chipOpen: "营业中 {n}", chipAll: "全部 {n}",
+    noOtherOpen: "{r} 公里内没有其他营业中的药店。",
+    tapAll: "点按“全部”可查看重新营业的时间。",
+    nothingElse: "该区域没有其他药店。",
+    more: "再显示 {n} 家",
+    unkNote: function (p) { return p.n + " 家药店没有已知的营业时间，见“全部”。出发前请先电话确认。"; },
+    metaBase: "数据库更新于 {date}，共 {n} 家药店。",
+    callAria: "拨打 {name}", routeAria: "导航到 {name}",
+    holidayTag: "{name}（法定假日）",
+    ohRaw: "OpenStreetMap 上的营业时间：{h}。格式无法识别，请电话确认。",
+    noHours: "OpenStreetMap 上没有这家药店的营业时间。",
+    verified: "营业时间核实于 {d}。",
+    site: "药店网站", fixOsm: "在 OpenStreetMap 上更正",
+    guideTitle: "安装应用",
+    guideLead: "把“{app}”添加到主屏幕后，它会像普通应用一样全屏打开，已浏览过的区域在没有网络时也能使用。",
+    tabIos: "iPhone", tabAndroid: "Android",
+    ios1: "用 <b>Safari</b> 打开本网站。",
+    ios2: "点按屏幕底部的<b>分享</b>按钮 {share}（iPad 在屏幕顶部）。",
+    ios3: "向下滑动，点按<b>添加到主屏幕</b>。",
+    ios4: "点按<b>添加</b>，图标就会出现在其他应用旁边。",
+    and1: "用 <b>Chrome</b> 打开本网站。",
+    and2: "点按右上角的菜单 {menu}。",
+    and3: "点按<b>安装应用</b>（或<b>添加到主屏幕</b>）。",
+    and4: "点按<b>安装</b>确认。",
+    guideDesk: "在电脑上（Chrome 或 Edge）：点击地址栏右侧的安装图标。",
+    guideNow: "立即安装", guideClose: "关闭", guideNever: "不再显示"
+  };
+
+  D.ko = {
+    title: "근처 약국", appTitle: "약국",
+    desc: "프랑스에서 가장 가까운 영업 중인 약국을 찾아 전화와 길찾기를 한 번에 하세요.",
+    langTitle: "언어", installBtn: "설치",
+    searchPh: "도시, 주소 또는 우편번호 (프랑스)", locAria: "내 위치 사용",
+    foot1: "영업시간은 OpenStreetMap에서 가져온 정보라 오래되었거나 불완전할 수 있습니다. 방문 전에 전화로 확인하세요.",
+    foot2: '데이터 © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> 기여자 (ODbL 라이선스). 주소: Géoplateforme IGN.',
+    foot3: "위치 정보는 휴대폰에만 남습니다. 사이트에는 검색 지역(약 20km)만 전달되고, 검색창에 입력한 글자는 IGN 주소 서비스로 전송됩니다.",
+    dec: ".", unitM: "m", unitKm: "km",
+    agoNow: "방금", agoMin: "{n}분 전", agoH: "{n}시간 전", agoD: "{n}일 전",
+    pharmacy: "약국",
+    noticeLive: "OpenStreetMap에서 바로 가져온 결과입니다.",
+    noticeOffline: "오프라인: 마지막 검색 결과를 표시합니다{ago}. 영업 상태는 현재 시각 기준으로 다시 계산됩니다.",
+    noticeNet: "네트워크 사용 불가: 마지막 검색 결과를 표시합니다{ago}. 영업 상태는 현재 시각 기준으로 다시 계산됩니다.",
+    errOffline: "연결이 없고 저장된 검색도 없습니다. 앱이 지역을 기억하도록 한 번 인터넷에 연결하세요.",
+    errLoad: "약국을 불러오지 못했습니다. 연결을 확인하고 다시 시도하세요.",
+    errNoGeo: "이 브라우저는 위치를 알 수 없습니다. 위에 도시를 입력하세요.",
+    errDenied: "이 앱의 위치 권한이 거부되었습니다. 설정 > 개인정보 보호 > 위치 서비스에서 허용하거나, 위에 도시를 입력하세요.",
+    errNoPos: "지금은 위치를 찾을 수 없습니다. 다시 시도하거나 위에 도시를 입력하세요.",
+    errNoPlace: "‘{q}’을(를) 찾을 수 없습니다. 프랑스의 도시나 우편번호를 로마자로 입력해 보세요(예: Paris).",
+    errAddr: "주소 검색을 사용할 수 없습니다. 위치 버튼을 사용하세요.",
+    myPos: "내 위치", call: "전화",
+    gardeAlertTitle: "당직 약국 찾기", gardeCalmTitle: "야간, 일요일, 공휴일",
+    gardeBody: "{reason} 당직 약국 명단은 공개 데이터로 제공되지 않아, 앱에는 평소 영업시간이 표시됩니다. 3237번이나 3237.fr에서 오늘의 당직 약국을 확인하세요.",
+    call3237: "3237에 전화", site3237: "3237.fr 열기", gardeSmall: "당직 약국",
+    urg: '생명이 위급할 때: <a href="tel:15">15 (SAMU)</a> 또는 <a href="tel:112">112</a>.',
+    reasonHoliday: "오늘({h})은 문을 닫은 약국이 많습니다.",
+    reasonSunday: "일요일이라 대부분의 약국이 문을 닫았습니다.",
+    reasonHour: "지금은 {t}입니다. 주간 약국은 문을 닫았습니다.",
+    reasonNoOpen: "평소 영업시간 기준으로 근처에 영업 중인 약국이 없습니다.",
+    reasonDefault: "당직 약국은 평소 영업시간 외의 긴급 상황을 맡습니다.",
+    leadFind: "가장 가까운 영업 중인 약국 찾기",
+    subFind: "전화와 길찾기를 한 번에. 위치 정보는 휴대폰에만 남습니다.",
+    usePos: "내 위치 사용",
+    searching: "검색 중",
+    searchingNear: "{where} 주변 약국을 찾고 있어요.",
+    searchingYou: "내 주변 약국을 찾고 있어요.",
+    nothing: "표시할 내용이 없습니다",
+    nearestOpen: "가장 가까운 영업 중 약국", go: "길찾기",
+    noneOpen: "영업 중인 약국을 찾지 못했습니다",
+    noneOpenSub: "반경 {r}km 안의 약국이 평소 영업시간 기준으로 모두 문을 닫았습니다. 당직 약국은 열려 있을 수 있으니 3237로 전화하세요.",
+    noneFound: "약국을 찾지 못했습니다",
+    noneFoundSub: "데이터베이스에 {r}km 이내 약국이 없습니다. 가까운 도시를 입력해 보세요.",
+    others: "다른 약국", nearby: "가까운 약국", filterAria: "필터",
+    chipOpen: "영업 중 {n}", chipAll: "전체 {n}",
+    noOtherOpen: "반경 {r}km 안에 영업 중인 다른 약국이 없습니다.",
+    tapAll: " ‘전체’를 누르면 다시 문 여는 시간을 볼 수 있어요.",
+    nothingElse: "이 지역에는 다른 약국이 없습니다.",
+    more: "{n}곳 더 보기",
+    unkNote: function (p) { return p.n + "곳의 약국은 영업시간 정보가 없습니다. ‘전체’에서 볼 수 있어요. 방문 전에 전화로 확인하세요."; },
+    metaBase: "데이터 기준일 {date}, 약국 {n}곳. ",
+    callAria: "{name}에 전화", routeAria: "{name}까지 길찾기",
+    holidayTag: "{name} (공휴일)",
+    ohRaw: "OpenStreetMap에 적힌 영업시간: {h}. 형식을 인식하지 못했으니 전화로 확인하세요.",
+    noHours: "이 약국은 OpenStreetMap에 영업시간이 없습니다.",
+    verified: "영업시간 확인일: {d}.",
+    site: "약국 웹사이트", fixOsm: "OpenStreetMap에서 수정",
+    guideTitle: "앱 설치하기",
+    guideLead: "‘{app}’을(를) 홈 화면에 추가하면 일반 앱처럼 전체 화면으로 열리고, 이미 본 지역은 인터넷이 없어도 볼 수 있습니다.",
+    tabIos: "iPhone", tabAndroid: "Android",
+    ios1: "<b>Safari</b>에서 이 사이트를 엽니다.",
+    ios2: "화면 아래의 <b>공유</b> 버튼 {share}을 누르세요(iPad는 화면 위쪽).",
+    ios3: "아래로 스크롤해서 <b>홈 화면에 추가</b>를 누르세요.",
+    ios4: "<b>추가</b>를 누르면 다른 앱 옆에 아이콘이 나타납니다.",
+    and1: "<b>Chrome</b>에서 이 사이트를 엽니다.",
+    and2: "오른쪽 위의 메뉴 {menu}를 누르세요.",
+    and3: "<b>앱 설치</b>(또는 <b>홈 화면에 추가</b>)를 누르세요.",
+    and4: "<b>설치</b>를 눌러 확인하세요.",
+    guideDesk: "컴퓨터(Chrome 또는 Edge)에서는 주소창 오른쪽 끝의 설치 아이콘을 클릭하세요.",
+    guideNow: "지금 설치", guideClose: "닫기", guideNever: "다시 표시 안 함"
+  };
+
+  /* ---------- moteur ---------- */
+  var cur = "fr";
+  function known(c) { return !!D[c]; }
+  function interp(s, p) {
+    return s.replace(/\{(\w+)\}/g, function (m, k) { return p && p[k] != null ? p[k] : m; });
+  }
+  function t(k, p) {
+    var v = D[cur][k];
+    if (v == null) v = D.fr[k];
+    if (v == null) return k;
+    return typeof v === "function" ? v(p || {}) : interp(v, p);
+  }
+  function setLang(c) { cur = known(c) ? c : "en"; return cur; }
+  function info(c) {
+    for (var i = 0; i < LANGS.length; i++) if (LANGS[i].c === (c || cur)) return LANGS[i];
+    return LANGS[0];
+  }
+  /* Langue de départ : choix enregistré, sinon première langue du téléphone que l'appli connaît, sinon anglais. */
+  function detect(saved, prefs) {
+    if (saved && known(saved)) return saved;
+    prefs = prefs || [];
+    for (var i = 0; i < prefs.length; i++) {
+      var c = String(prefs[i] || "").toLowerCase().split(/[-_]/)[0];
+      if (known(c)) return c;
+    }
+    return "en";
+  }
+
+  return {
+    LANGS: LANGS, D: D, PACKS: PACKS, t: t, setLang: setLang, get lang() { return cur; },
+    info: info, detect: detect, known: known
+  };
+});
+</script>
 <script>
 /* Lecteur d'horaires OpenStreetMap (opening_hours), version réduite aux cas utiles pour les pharmacies.
    Tout ce qui n'est pas compris donne "horaires inconnus" : on n'invente jamais une ouverture. */
@@ -174,8 +822,29 @@ footer p{margin:0 0 8px;max-width:40em}
   "use strict";
   var WD = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
   var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  var JOURS = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"];
   var TZ = "Europe/Paris";
+
+  /* ---------- langue ---------- */
+  /* Paquet de textes français par défaut ; l'appli en branche un autre avec setPack() (voir i18n.js). */
+  function pad2(n) { return (n < 10 ? "0" : "") + n; }
+  var FR_PACK = {
+    dayOn: ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"],
+    dayLabels: ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"],
+    tomorrow: "demain", today: "Aujourd'hui", midnight: "minuit",
+    fmtTime: function (h, mm) { return h + " h" + (mm ? " " + pad2(mm) : ""); },
+    open24: "Ouverte 24 h/24", openMid: "Ouverte jusqu'à minuit",
+    openUntil: function (t, d) { return "Ouverte jusqu'à " + (d ? d + " " : "") + t; },
+    soon: function (n) { return "Ferme dans " + n + " min"; },
+    opening: function (n) { return "Ouvre dans " + n + " min"; },
+    closed: "Fermée",
+    closedOpens: function (t, d) { return "Fermée, ouvre " + (d ? d + " " : "") + "à " + t; },
+    unknown: "Horaires inconnus",
+    holidays: { newyear: "Jour de l'an", labour: "Fête du travail", victory: "Victoire 1945", national: "Fête nationale",
+      assumption: "Assomption", allsaints: "Toussaint", armistice: "Armistice", christmas: "Noël",
+      eastermon: "Lundi de Pâques", ascension: "Ascension", whitmon: "Lundi de Pentecôte" }
+  };
+  var PACK = FR_PACK;
+  function setPack(p) { PACK = p || FR_PACK; }
   var SOON = 45; /* minutes : "ferme bientôt" / "ouvre bientôt" */
 
   /* ---------- calendrier ---------- */
@@ -196,16 +865,19 @@ footer p{margin:0 0 8px;max-width:40em}
     if (phMemo[y]) return phMemo[y];
     var s = {};
     function add(m, d, n) { s[m * 100 + d] = n; }
-    add(1, 1, "Jour de l'an"); add(5, 1, "Fête du travail"); add(5, 8, "Victoire 1945"); add(7, 14, "Fête nationale");
-    add(8, 15, "Assomption"); add(11, 1, "Toussaint"); add(11, 11, "Armistice"); add(12, 25, "Noël");
+    add(1, 1, "newyear"); add(5, 1, "labour"); add(5, 8, "victory"); add(7, 14, "national");
+    add(8, 15, "assumption"); add(11, 1, "allsaints"); add(11, 11, "armistice"); add(12, 25, "christmas");
     var e = easter(y);
-    [[1, "Lundi de Pâques"], [39, "Ascension"], [50, "Lundi de Pentecôte"]].forEach(function (x) {
+    [[1, "eastermon"], [39, "ascension"], [50, "whitmon"]].forEach(function (x) {
       var dt = new Date(Date.UTC(y, e.m - 1, e.d + x[0]));
       add(dt.getUTCMonth() + 1, dt.getUTCDate(), x[1]);
     });
     return (phMemo[y] = s);
   }
-  function holidayName(y, m, d) { return holidays(y)[m * 100 + d] || null; }
+  function holidayName(y, m, d) {
+    var k = holidays(y)[m * 100 + d];
+    return k ? (PACK.holidays[k] || FR_PACK.holidays[k]) : null;
+  }
 
   /* Heure légale de Paris, quel que soit le fuseau du téléphone. */
   var fmt = null;
@@ -383,27 +1055,28 @@ footer p{margin:0 0 8px;max-width:40em}
   function hm(m) {
     m = ((m % 1440) + 1440) % 1440;
     var h = Math.floor(m / 60), mm = m % 60;
-    if (h === 0 && mm === 0) return "minuit";
-    return h + " h" + (mm ? " " + (mm < 10 ? "0" : "") + mm : "");
+    if (h === 0 && mm === 0) return PACK.midnight;
+    return PACK.fmtTime(h, mm);
   }
+  /* "" (aujourd'hui) | "demain" | nom du jour, dans la langue du paquet */
   function dayWord(n, absMin) {
     var k = Math.floor(absMin / 1440);
     if (k <= 0) return "";
-    if (k === 1) return "demain ";
-    return JOURS[civil(n.y, n.m, n.d, k).wd] + " ";
+    if (k === 1) return PACK.tomorrow;
+    return PACK.dayOn[civil(n.y, n.m, n.d, k).wd];
   }
   function describe(st, n) {
     switch (st.state) {
       case "open":
-        if (st.always) return "Ouverte 24 h/24";
-        if (st.until === 1440) return "Ouverte jusqu'à minuit";
-        return "Ouverte jusqu'à " + (st.until >= 1440 ? dayWord(n, st.until) : "") + hm(st.until);
-      case "soon": return "Ferme dans " + st.left + " min";
-      case "opening": return "Ouvre dans " + st.inMin + " min";
+        if (st.always) return PACK.open24;
+        if (st.until === 1440) return PACK.openMid;
+        return PACK.openUntil(hm(st.until), st.until >= 1440 ? dayWord(n, st.until) : "");
+      case "soon": return PACK.soon(st.left);
+      case "opening": return PACK.opening(st.inMin);
       case "closed":
-        if (st.opens == null) return "Fermée";
-        return "Fermée, ouvre " + (st.opens >= 1440 ? dayWord(n, st.opens) + "à " : "à ") + hm(st.opens);
-      default: return "Horaires inconnus";
+        if (st.opens == null) return PACK.closed;
+        return PACK.closedOpens(hm(st.opens), st.opens >= 1440 ? dayWord(n, st.opens) : "");
+      default: return PACK.unknown;
     }
   }
   function spanText(iv) {
@@ -413,17 +1086,17 @@ footer p{margin:0 0 8px;max-width:40em}
     var out = [];
     for (var k = 0; k < 7; k++) {
       var c = civil(n.y, n.m, n.d, k), txt, ph = holidayName(c.y, c.m, c.d);
-      if (!p || !p.ok) txt = "Horaires inconnus";
+      if (!p || !p.ok) txt = PACK.unknown;
       else {
         var dd = dayData(p, c);
-        txt = dd.iv.length ? spanText(dd.iv.slice().sort(function (a, b) { return a[0] - b[0]; })) : (dd.unk ? "Horaires inconnus" : "Fermée");
+        txt = dd.iv.length ? spanText(dd.iv.slice().sort(function (a, b) { return a[0] - b[0]; })) : (dd.unk ? PACK.unknown : PACK.closed);
       }
-      out.push({ label: k === 0 ? "Aujourd'hui" : JOURS[c.wd].charAt(0).toUpperCase() + JOURS[c.wd].slice(1), text: txt, ph: ph, today: k === 0 });
+      out.push({ label: k === 0 ? PACK.today : PACK.dayLabels[c.wd], text: txt, ph: ph, today: k === 0 });
     }
     return out;
   }
 
-  return { parse: parse, status: status, describe: describe, week: week, now: now, civil: civil, holidayName: holidayName, hm: hm, SOON: SOON };
+  return { parse: parse, status: status, describe: describe, week: week, now: now, civil: civil, holidayName: holidayName, hm: hm, setPack: setPack, FR: FR_PACK, SOON: SOON };
 });
 </script>
 <script>
@@ -437,6 +1110,7 @@ footer p{margin:0 0 8px;max-width:40em}
   ];
   var RADII = [8, 20, 40];            /* km, élargi tant qu'il n'y a pas assez de pharmacies ouvertes */
   var GARDE_TEL = "3237";
+  var tr = I18N.t;
 
   function $(s) { return document.querySelector(s); }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
@@ -459,8 +1133,8 @@ footer p{margin:0 0 8px;max-width:40em}
     radius: 0,
     loading: false,
     locating: false,
-    error: "",
-    notice: "",         /* ex. "Hors connexion" */
+    error: null,        /* {k, p} : clé de texte, traduite à l'affichage (la langue peut changer) */
+    notice: null,       /* {k} : idem */
     filter: "open",
     shown: 12,
     open: null,         /* id de la fiche dépliée */
@@ -476,8 +1150,8 @@ footer p{margin:0 0 8px;max-width:40em}
     return 2 * R * Math.asin(Math.sqrt(h));
   }
   function fmtDist(m) {
-    if (m < 1000) return (m < 100 ? Math.round(m / 5) * 5 : Math.round(m / 10) * 10) + " m";
-    return (m < 10000 ? (m / 1000).toFixed(1) : Math.round(m / 1000)).toString().replace(".", ",") + " km";
+    if (m < 1000) return (m < 100 ? Math.round(m / 5) * 5 : Math.round(m / 10) * 10) + tr("unitM");
+    return (m < 10000 ? (m / 1000).toFixed(1) : Math.round(m / 1000)).toString().replace(".", tr("dec")) + tr("unitKm");
   }
   function telDigits(t) {
     if (!t) return "";
@@ -501,18 +1175,26 @@ footer p{margin:0 0 8px;max-width:40em}
   }
   function ago(ts) {
     var m = Math.round((Date.now() - ts) / 60000);
-    if (m < 2) return "à l'instant";
-    if (m < 60) return "il y a " + m + " min";
-    if (m < 1440) return "il y a " + Math.round(m / 60) + " h";
-    return "il y a " + Math.round(m / 1440) + " j";
+    if (m < 2) return tr("agoNow");
+    if (m < 60) return tr("agoMin", { n: m });
+    if (m < 1440) return tr("agoH", { n: Math.round(m / 60) });
+    return tr("agoD", { n: Math.round(m / 1440) });
   }
   function oh(p) { return p._oh || (p._oh = OH.parse(p.h)); }
   function stOf(p, now) { return OH.status(oh(p), now); }
   function cls(st) { return st.state === "open" ? "open" : st.state === "soon" ? "soon" : st.state === "opening" ? "opening" : st.state === "closed" ? "closed" : "unknown"; }
   function crossCls(st) { return st.state === "open" ? "lit" : (st.state === "soon" || st.state === "opening") ? "soon" : st.state === "closed" ? "off" : "unk"; }
   function isOpenish(st) { return st.state === "open" || st.state === "soon" || st.state === "opening"; }
-  function nameOf(p) { return p.n || "Pharmacie"; }
+  function nameOf(p) { return p.n || tr("pharmacy"); }
   function addrOf(p) { return [p.a, p.c].filter(Boolean).join(", "); }
+  /* Libellé de la position : ville trouvée, sinon « Ma position » dans la langue en cours. */
+  function posLabel() { return S.pos ? (S.pos.label || (S.pos.mode === "gps" ? tr("myPos") : "")) : ""; }
+  function syncQ() { $("#q").value = posLabel(); }
+  function errText() { return S.error ? tr(S.error.k, S.error.p) : ""; }
+  function noticeText() {
+    if (!S.notice) return "";
+    return tr(S.notice.k, { ago: S.stamp ? " (" + ago(S.stamp) + ")" : "" });
+  }
 
   /* ---------- données : tuiles statiques, puis Overpass en secours ---------- */
   var tiles = {};
@@ -562,7 +1244,7 @@ footer p{margin:0 0 8px;max-width:40em}
 
   function search(pos) {
     var id = ++S.searchId, hadItems = S.items.length > 0;
-    S.loading = true; S.error = ""; S.notice = ""; S.shown = 12; S.open = null;
+    S.loading = true; S.error = null; S.notice = null; S.shown = 12; S.open = null;
     render();
     function step(ri) {
       var R = RADII[ri], keys = tilesFor(pos, R);
@@ -585,13 +1267,13 @@ footer p{margin:0 0 8px;max-width:40em}
     }).then(function (o) {
       if (id !== S.searchId) return;
       S.items = o.res.items; S.radius = o.res.R; S.loading = false;
-      S.notice = o.live ? "Résultats en direct depuis OpenStreetMap." : "";
+      S.notice = o.live ? { k: "noticeLive" } : null;
       saveLast(); render();
     }).catch(function () {
       if (id !== S.searchId) return;
       S.loading = false;
-      if (hadItems) S.notice = (navigator.onLine === false ? "Hors connexion" : "Réseau indisponible") + ": résultats de la dernière recherche" + (S.stamp ? " (" + ago(S.stamp) + ")" : "") + ". Les horaires restent calculés à l'heure actuelle.";
-      else S.error = navigator.onLine === false ? "Pas de connexion et aucune recherche enregistrée. Reconnectez-vous une fois pour que l'appli garde la zone en mémoire." : "Impossible de charger les pharmacies. Vérifiez la connexion et réessayez.";
+      if (hadItems) S.notice = { k: navigator.onLine === false ? "noticeOffline" : "noticeNet" };
+      else S.error = { k: navigator.onLine === false ? "errOffline" : "errLoad" };
       render();
     });
   }
@@ -600,7 +1282,7 @@ footer p{margin:0 0 8px;max-width:40em}
   function setPos(lat, lon, label, mode) {
     S.pos = { lat: lat, lon: lon, label: label || "", mode: mode };
     LS.set("pharma.pos", S.pos);
-    $("#q").value = label || "";
+    syncQ();
     return search(S.pos);
   }
   function reverse(lat, lon) {
@@ -610,21 +1292,19 @@ footer p{margin:0 0 8px;max-width:40em}
     }).catch(function () { return ""; });
   }
   function locate(silent) {
-    if (!navigator.geolocation) { S.error = "Ce navigateur ne sait pas donner la position. Saisissez une ville ci-dessus."; render(); return; }
-    S.locating = true; if (!silent) { S.error = ""; } render();
+    if (!navigator.geolocation) { S.error = { k: "errNoGeo" }; render(); return; }
+    S.locating = true; if (!silent) { S.error = null; } render();
     navigator.geolocation.getCurrentPosition(function (g) {
       S.locating = false;
       var lat = g.coords.latitude, lon = g.coords.longitude;
       if (silent && S.pos && S.pos.mode === "gps" && dist(S.pos, { lat: lat, lon: lon }) < 250) { render(); return; }
-      var label = (S.pos && S.pos.mode === "gps" && dist(S.pos, { lat: lat, lon: lon }) < 1500 && S.pos.label) || "Ma position";
+      var label = (S.pos && S.pos.mode === "gps" && dist(S.pos, { lat: lat, lon: lon }) < 1500 && S.pos.label) || "";
       setPos(lat, lon, label, "gps");
-      reverse(lat, lon).then(function (l) { if (l && S.pos && S.pos.mode === "gps") { S.pos.label = l; LS.set("pharma.pos", S.pos); $("#q").value = l; } });
+      reverse(lat, lon).then(function (l) { if (l && S.pos && S.pos.mode === "gps") { S.pos.label = l; LS.set("pharma.pos", S.pos); syncQ(); } });
     }, function (e) {
       S.locating = false;
       if (silent) { render(); return; }
-      S.error = e.code === 1
-        ? "La position est refusée pour cette appli. Autorisez-la dans Réglages > Confidentialité > Service de localisation, ou saisissez une ville ci-dessus."
-        : "Position introuvable pour le moment. Réessayez, ou saisissez une ville ci-dessus.";
+      S.error = { k: e.code === 1 ? "errDenied" : "errNoPos" };
       render();
     }, { enableHighAccuracy: false, timeout: 9000, maximumAge: silent ? 300000 : 60000 });
   }
@@ -673,7 +1353,7 @@ footer p{margin:0 0 8px;max-width:40em}
     clearTimeout(sugT);
     if (sugs.length) { pick(sugSel >= 0 ? sugSel : 0); return; }
     var v = $("#q").value.trim(); if (v.length < 2) return;
-    geocode(v).then(function (r) { sugs = r; if (r.length) pick(0); else { S.error = "Aucun lieu trouvé pour « " + v + " ». Essayez une ville ou un code postal."; render(); } }).catch(function () { S.error = "La recherche d'adresse est indisponible. Utilisez le bouton de position."; render(); });
+    geocode(v).then(function (r) { sugs = r; if (r.length) pick(0); else { S.error = { k: "errNoPlace", p: { q: v } }; render(); } }).catch(function () { S.error = { k: "errAddr" }; render(); });
   });
   $("#sug").addEventListener("mousedown", function (e) { e.preventDefault(); });
   $("#sug").addEventListener("click", function (e) { var li = e.target.closest("li"); if (li) pick(+li.getAttribute("data-i")); });
@@ -684,13 +1364,13 @@ footer p{margin:0 0 8px;max-width:40em}
   function btnTel(p, big) {
     var d = telDigits(p.t);
     if (!d) return "";
-    return '<a class="act p" href="tel:' + esc(d) + '">' + ICON.tel + "<span>Appeler<small>" + esc(telShow(p.t)) + "</small></span></a>";
+    return '<a class="act p" href="tel:' + esc(d) + '">' + ICON.tel + "<span>" + esc(tr("call")) + "<small>" + esc(telShow(p.t)) + "</small></span></a>";
   }
   function gardeHtml(alertMode, reason) {
-    return '<section class="garde' + (alertMode ? "" : " calm") + '" aria-labelledby="gh"><h2 id="gh">' + (alertMode ? "Chercher une pharmacie de garde" : "Nuit, dimanche et jours fériés") + "</h2>" +
-      "<p>" + esc(reason) + " Les gardes ne sont pas publiées en données ouvertes: l'appli montre les horaires habituels. Le 3237 ou 3237.fr indique la pharmacie de garde du jour.</p>" +
-      '<div class="gb"><a class="gbtn" href="tel:' + GARDE_TEL + '">' + ICON.tel + 'Appeler le 3237</a><a class="gbtn o" href="https://www.3237.fr" target="_blank" rel="noopener">Ouvrir 3237.fr</a></div>' +
-      '<p class="urg">Urgence vitale: <a href="tel:15">15 (SAMU)</a> ou <a href="tel:112">112</a>.</p></section>';
+    return '<section class="garde' + (alertMode ? "" : " calm") + '" aria-labelledby="gh"><h2 id="gh">' + esc(tr(alertMode ? "gardeAlertTitle" : "gardeCalmTitle")) + "</h2>" +
+      "<p>" + esc(tr("gardeBody", { reason: reason })) + "</p>" +
+      '<div class="gb"><a class="gbtn" href="tel:' + GARDE_TEL + '">' + ICON.tel + esc(tr("call3237")) + '</a><a class="gbtn o" href="https://www.3237.fr" target="_blank" rel="noopener">' + esc(tr("site3237")) + "</a></div>" +
+      '<p class="urg">' + tr("urg") + "</p></section>";
   }
 
   function render() {
@@ -701,33 +1381,33 @@ footer p{margin:0 0 8px;max-width:40em}
     var hero = null;
     for (var i = 0; i < rows.length; i++) { if (isOpenish(rows[i].st)) { hero = rows[i]; break; } }
     var reason = "";
-    if (holiday) reason = "Aujourd'hui (" + holiday + "), beaucoup de pharmacies sont fermées.";
-    else if (now.wd === 6) reason = "C'est dimanche: la plupart des pharmacies sont fermées.";
-    else if (hour >= 20 || hour < 8) reason = "Il est " + OH.hm(now.min) + ": les pharmacies de journée sont fermées.";
-    else if (S.pos && !S.loading && S.items.length && !hero) reason = "Aucune pharmacie ouverte trouvée près de vous d'après les horaires habituels.";
+    if (holiday) reason = tr("reasonHoliday", { h: holiday });
+    else if (now.wd === 6) reason = tr("reasonSunday");
+    else if (hour >= 20 || hour < 8) reason = tr("reasonHour", { t: OH.hm(now.min) });
+    else if (S.pos && !S.loading && S.items.length && !hero) reason = tr("reasonNoOpen");
     var alertMode = !!reason && (!hero || holiday || now.wd === 6 || hour >= 20 || hour < 8);
-    if (!reason) reason = "Les pharmacies de garde assurent les urgences en dehors des horaires habituels.";
+    if (!reason) reason = tr("reasonDefault");
 
     /* enseigne */
     var h = "";
     if (!S.pos) {
-      h = '<div class="hero"><span class="cross off" aria-hidden="true">' + CROSS + '</span><div><p class="lead">Trouvez la pharmacie ouverte la plus proche</p><p class="sub">Appel et itinéraire en un geste. Votre position reste sur votre téléphone.</p></div></div>';
-      if (S.error) h += '<p class="sub" role="alert">' + esc(S.error) + "</p>";
-      h += '<div class="hero"><div class="acts one"><button class="act p" id="loc2" type="button">' + ICON.loc + "<span>Utiliser ma position</span></button></div></div>";
+      h = '<div class="hero"><span class="cross off" aria-hidden="true">' + CROSS + '</span><div><p class="lead">' + esc(tr("leadFind")) + '</p><p class="sub">' + esc(tr("subFind")) + "</p></div></div>";
+      if (S.error) h += '<p class="sub" role="alert">' + esc(errText()) + "</p>";
+      h += '<div class="hero"><div class="acts one"><button class="act p" id="loc2" type="button">' + ICON.loc + "<span>" + esc(tr("usePos")) + "</span></button></div></div>";
     } else if ((S.loading || S.locating) && !S.items.length) {
-      h = '<div class="hero"><span class="cross lit busy" aria-hidden="true">' + CROSS + '</span><div><p class="lead">Recherche en cours</p><p class="sub">Je regarde les pharmacies autour de ' + esc(S.pos.label || "vous") + ".</p></div></div>";
+      h = '<div class="hero"><span class="cross lit busy" aria-hidden="true">' + CROSS + '</span><div><p class="lead">' + esc(tr("searching")) + '</p><p class="sub">' + esc(posLabel() ? tr("searchingNear", { where: posLabel() }) : tr("searchingYou")) + "</p></div></div>";
     } else if (S.error && !S.items.length) {
-      h = '<div class="hero"><span class="cross off" aria-hidden="true">' + CROSS + '</span><div><p class="lead">Rien à afficher</p><p class="sub" role="alert">' + esc(S.error) + '</p></div></div>';
+      h = '<div class="hero"><span class="cross off" aria-hidden="true">' + CROSS + '</span><div><p class="lead">' + esc(tr("nothing")) + '</p><p class="sub" role="alert">' + esc(errText()) + '</p></div></div>';
     } else if (hero) {
       var p = hero.p, tel = btnTel(p);
-      h = '<div class="hero"><span class="cross ' + crossCls(hero.st) + '" aria-hidden="true">' + CROSS + '</span><div><p class="hk">Ouverte la plus proche</p><h2 class="hn">' + esc(nameOf(p)) + '</h2><p class="hs ' + cls(hero.st) + '">' + esc(OH.describe(hero.st, now)) + '</p><p class="ha"><b>' + fmtDist(p._d) + "</b>" + (addrOf(p) ? "<span>" + esc(addrOf(p)) + "</span>" : "") + "</p></div>" +
-        '<div class="acts' + (tel ? "" : " one") + '">' + tel + '<a class="act s" href="' + esc(goUrl(p)) + '">' + ICON.go + "<span>Y aller</span></a></div></div>";
+      h = '<div class="hero"><span class="cross ' + crossCls(hero.st) + '" aria-hidden="true">' + CROSS + '</span><div><p class="hk">' + esc(tr("nearestOpen")) + '</p><h2 class="hn">' + esc(nameOf(p)) + '</h2><p class="hs ' + cls(hero.st) + '">' + esc(OH.describe(hero.st, now)) + '</p><p class="ha"><b>' + fmtDist(p._d) + "</b>" + (addrOf(p) ? "<span>" + esc(addrOf(p)) + "</span>" : "") + "</p></div>" +
+        '<div class="acts' + (tel ? "" : " one") + '">' + tel + '<a class="act s" href="' + esc(goUrl(p)) + '">' + ICON.go + "<span>" + esc(tr("go")) + "</span></a></div></div>";
     } else if (S.items.length) {
-      h = '<div class="hero"><span class="cross off" aria-hidden="true">' + CROSS + '</span><div><p class="lead">Aucune pharmacie ouverte trouvée</p><p class="sub">Dans un rayon de ' + S.radius + " km, toutes les pharmacies sont fermées d'après leurs horaires habituels. Une pharmacie de garde est peut-être ouverte: appelez le 3237.</p></div>" +
-        '<div class="acts"><a class="act p" href="tel:' + GARDE_TEL + '">' + ICON.tel + "<span>Appeler le 3237<small>pharmacie de garde</small></span></a>" +
-        '<a class="act s" href="https://www.3237.fr" target="_blank" rel="noopener"><span>Ouvrir 3237.fr</span></a></div></div>';
+      h = '<div class="hero"><span class="cross off" aria-hidden="true">' + CROSS + '</span><div><p class="lead">' + esc(tr("noneOpen")) + '</p><p class="sub">' + esc(tr("noneOpenSub", { r: S.radius })) + "</p></div>" +
+        '<div class="acts"><a class="act p" href="tel:' + GARDE_TEL + '">' + ICON.tel + "<span>" + esc(tr("call3237")) + "<small>" + esc(tr("gardeSmall")) + "</small></span></a>" +
+        '<a class="act s" href="https://www.3237.fr" target="_blank" rel="noopener"><span>' + esc(tr("site3237")) + "</span></a></div></div>";
     } else {
-      h = '<div class="hero"><span class="cross off" aria-hidden="true">' + CROSS + '</span><div><p class="lead">Aucune pharmacie trouvée</p><p class="sub">Aucune pharmacie dans la base à moins de ' + (S.radius || RADII[RADII.length - 1]) + " km. Essayez une ville proche.</p></div></div>";
+      h = '<div class="hero"><span class="cross off" aria-hidden="true">' + CROSS + '</span><div><p class="lead">' + esc(tr("noneFound")) + '</p><p class="sub">' + esc(tr("noneFoundSub", { r: S.radius || RADII[RADII.length - 1] })) + "</p></div></div>";
     }
     board.innerHTML = h;
     var l2 = $("#loc2"); if (l2) l2.addEventListener("click", function () { locate(false); });
@@ -740,41 +1420,50 @@ footer p{margin:0 0 8px;max-width:40em}
     if (S.pos && others.length) {
       var shownRows = S.filter === "open" ? openOnes : others;
       var cut = shownRows.slice(0, S.shown), unkN = others.filter(function (r) { return r.st.state === "unknown"; }).length;
-      l += '<div class="lh"><h2 class="lt">' + (hero ? "Autres pharmacies" : "Pharmacies proches") + '</h2><div class="chips" role="group" aria-label="Filtre">' +
-        '<button class="chip" type="button" data-f="open" aria-pressed="' + (S.filter === "open") + '">Ouvertes ' + openOnes.length + "</button>" +
-        '<button class="chip" type="button" data-f="all" aria-pressed="' + (S.filter === "all") + '">Toutes ' + others.length + "</button></div></div>";
-      if (S.notice) l += '<p class="note">' + esc(S.notice) + "</p>";
-      if (!cut.length) l += '<p class="note">' + (S.filter === "open" ? "Aucune autre pharmacie ouverte dans un rayon de " + S.radius + " km." + (others.length ? " Touchez « Toutes » pour voir les horaires de réouverture." : "") : "Rien d'autre dans la zone.") + "</p>";
+      l += '<div class="lh"><h2 class="lt">' + esc(tr(hero ? "others" : "nearby")) + '</h2><div class="chips" role="group" aria-label="' + esc(tr("filterAria")) + '">' +
+        '<button class="chip" type="button" data-f="open" aria-pressed="' + (S.filter === "open") + '">' + esc(tr("chipOpen", { n: openOnes.length })) + "</button>" +
+        '<button class="chip" type="button" data-f="all" aria-pressed="' + (S.filter === "all") + '">' + esc(tr("chipAll", { n: others.length })) + "</button></div></div>";
+      if (S.notice) l += '<p class="note">' + esc(noticeText()) + "</p>";
+      if (!cut.length) l += '<p class="note">' + esc(S.filter === "open" ? tr("noOtherOpen", { r: S.radius }) + (others.length ? tr("tapAll") : "") : tr("nothingElse")) + "</p>";
       else {
         l += '<ul class="rows">' + cut.map(function (r) { return rowHtml(r, now); }).join("") + "</ul>";
-        if (shownRows.length > S.shown) l += '<button class="more" type="button" id="more">Afficher ' + Math.min(10, shownRows.length - S.shown) + " de plus</button>";
+        if (shownRows.length > S.shown) l += '<button class="more" type="button" id="more">' + esc(tr("more", { n: Math.min(10, shownRows.length - S.shown) })) + "</button>";
       }
-      if (S.filter === "open" && unkN) l += '<p class="note">' + unkN + (unkN > 1 ? " pharmacies n'ont" : " pharmacie n'a") + " pas d'horaires connus: elles sont dans « Toutes ». Appelez avant de vous déplacer.</p>";
-    } else if (S.notice) l += '<p class="note">' + esc(S.notice) + "</p>";
+      if (S.filter === "open" && unkN) l += '<p class="note">' + esc(tr("unkNote", { n: unkN })) + "</p>";
+    } else if (S.notice) l += '<p class="note">' + esc(noticeText()) + "</p>";
     list.innerHTML = l;
 
     var g = gardeHtml(alertMode, reason);
     top.innerHTML = alertMode ? g : ""; bottom.innerHTML = alertMode ? "" : g;
-    $("#meta").textContent = S.meta ? "Base du " + new Date(S.meta.built).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Paris" }) + ", " + String(S.meta.count).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " pharmacies. " : "";
+    $("#meta").textContent = S.meta ? tr("metaBase", { date: new Date(S.meta.built).toLocaleDateString(I18N.info().loc, { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Paris" }), n: String(S.meta.count).replace(/\B(?=(\d{3})+(?!\d))/g, "\u202f") }) : "";
   }
 
   function rowHtml(r, now) {
     var p = r.p, st = r.st, id = esc(p.i), open = S.open === p.i, d = telDigits(p.t);
     var a = '<li class="row" data-id="' + id + '"><button class="rm" type="button" aria-expanded="' + open + '" data-id="' + id + '"><span class="cross sm ' + crossCls(st) + '" aria-hidden="true">' + CROSS + '</span><span class="rt"><span class="rn">' + esc(nameOf(p)) + '</span><span class="rs ' + cls(st) + '">' + esc(OH.describe(st, now)) + '</span><span class="rl"><b>' + fmtDist(p._d) + "</b>" + (addrOf(p) ? "<span>" + esc(addrOf(p)) + "</span>" : "") + "</span></span></button>" +
-      '<div class="ibs">' + (d ? '<a class="ib" href="tel:' + esc(d) + '" aria-label="Appeler ' + esc(nameOf(p)) + '">' + ICON.tel + "</a>" : "") +
-      '<a class="ib" href="' + esc(goUrl(p)) + '" aria-label="Itinéraire vers ' + esc(nameOf(p)) + '">' + ICON.go + "</a></div>";
+      '<div class="ibs">' + (d ? '<a class="ib" href="tel:' + esc(d) + '" aria-label="' + esc(tr("callAria", { name: nameOf(p) })) + '">' + ICON.tel + "</a>" : "") +
+      '<a class="ib" href="' + esc(goUrl(p)) + '" aria-label="' + esc(tr("routeAria", { name: nameOf(p) })) + '">' + ICON.go + "</a></div>";
     if (open) {
       var wk = OH.week(oh(p), now);
-      a += '<div class="detail"><dl class="wk">' + wk.map(function (w) { return "<dt" + (w.today ? ' class="today"' : "") + ">" + esc(w.label) + "</dt><dd" + (w.today ? ' class="today"' : "") + ">" + esc(w.text) + (w.ph ? "<small>" + esc(w.ph) + " (jour férié)</small>" : "") + "</dd>"; }).join("") + "</dl>" +
-        (!oh(p).ok && p.h ? '<p class="note">Horaires indiqués dans OpenStreetMap: ' + esc(p.h) + ". Format non reconnu, appelez pour confirmer.</p>" : "") +
-        (!p.h ? '<p class="note">Cette pharmacie n\'a pas d\'horaires dans OpenStreetMap.</p>' : "") +
-        (p.v ? '<p class="note">Horaires vérifiés le ' + esc(p.v) + ".</p>" : "") +
-        '<p class="links">' + (/^https?:\/\//.test(p.w) ? '<a href="' + esc(p.w) + '" target="_blank" rel="noopener">Site de la pharmacie</a>' : "") + '<a href="' + esc(osmUrl(p)) + '" target="_blank" rel="noopener">Corriger sur OpenStreetMap</a></p></div>';
+      a += '<div class="detail"><dl class="wk">' + wk.map(function (w) { return "<dt" + (w.today ? ' class="today"' : "") + ">" + esc(w.label) + "</dt><dd" + (w.today ? ' class="today"' : "") + ">" + esc(w.text) + (w.ph ? "<small>" + esc(tr("holidayTag", { name: w.ph })) + "</small>" : "") + "</dd>"; }).join("") + "</dl>" +
+        (!oh(p).ok && p.h ? '<p class="note">' + esc(tr("ohRaw", { h: p.h })) + "</p>" : "") +
+        (!p.h ? '<p class="note">' + esc(tr("noHours")) + "</p>" : "") +
+        (p.v ? '<p class="note">' + esc(tr("verified", { d: p.v })) + "</p>" : "") +
+        '<p class="links">' + (/^https?:\/\//.test(p.w) ? '<a href="' + esc(p.w) + '" target="_blank" rel="noopener">' + esc(tr("site")) + "</a>" : "") + '<a href="' + esc(osmUrl(p)) + '" target="_blank" rel="noopener">' + esc(tr("fixOsm")) + "</a></p></div>";
     }
     return a + "</li>";
   }
 
   document.addEventListener("click", function (e) {
+    if (e.target.closest("#lang-btn")) { toggleMenu($("#lang-menu").hidden); return; }
+    var lg = e.target.closest("[data-lang]");
+    if (lg) {
+      var inMenu = !!lg.closest("#lang-menu");
+      setLanguage(lg.getAttribute("data-lang"), true);
+      if (inMenu) { toggleMenu(false); $("#lang-btn").focus(); }
+      return;
+    }
+    if (!$("#lang-menu").hidden && !e.target.closest("#lang-menu")) toggleMenu(false);
     var c = e.target.closest("[data-f]");
     if (c) { S.filter = c.getAttribute("data-f"); S.shown = 12; render(); return; }
     var m = e.target.closest(".rm");
@@ -782,22 +1471,129 @@ footer p{margin:0 0 8px;max-width:40em}
     if (e.target.id === "more") { S.shown += 10; render(); }
   });
 
+  /* ---------- langue ---------- */
+  function qsa(sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
+  function applyStatic() {
+    var inf = I18N.info();
+    document.documentElement.lang = inf.html;
+    document.title = tr("title");
+    var m1 = document.querySelector('meta[name="apple-mobile-web-app-title"]'); if (m1) m1.setAttribute("content", tr("appTitle"));
+    var m2 = document.querySelector('meta[name="description"]'); if (m2) m2.setAttribute("content", tr("desc"));
+    qsa("[data-i18n]").forEach(function (el) { el.textContent = tr(el.getAttribute("data-i18n")); });
+    qsa("[data-i18n-html]").forEach(function (el) { el.innerHTML = tr(el.getAttribute("data-i18n-html")); });
+    qsa("[data-i18n-ph]").forEach(function (el) { el.setAttribute("placeholder", tr(el.getAttribute("data-i18n-ph"))); });
+    qsa("[data-i18n-aria]").forEach(function (el) { el.setAttribute("aria-label", tr(el.getAttribute("data-i18n-aria"))); });
+    $("#lang-cur").textContent = inf.s;
+    $("#lang-cur").setAttribute("lang", inf.html);
+  }
+  function renderLangMenu() {
+    $("#lang-menu").innerHTML = I18N.LANGS.map(function (l) {
+      return '<li role="none"><button type="button" role="menuitemradio" lang="' + l.html + '" data-lang="' + l.c + '" aria-checked="' + (l.c === I18N.lang) + '">' + esc(l.n) + "</button></li>";
+    }).join("");
+  }
+  function toggleMenu(open) {
+    var m = $("#lang-menu"); m.hidden = !open; $("#lang-btn").setAttribute("aria-expanded", open ? "true" : "false");
+    if (open) { var cur = m.querySelector('[aria-checked="true"]'); if (cur) cur.focus(); }
+  }
+  function setLanguage(c, save) {
+    I18N.setLang(c);
+    OH.setPack(I18N.PACKS[I18N.lang] || null);
+    if (save) LS.set("pharma.lang", I18N.lang);
+    applyStatic(); renderLangMenu(); syncQ(); render();
+    if (!$("#guide").hidden) renderGuide();
+  }
+
+  /* ---------- guide d'installation ---------- */
+  var standalone = window.navigator.standalone === true || (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
+  var SHARE_SVG = '<span class="gico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M7 10H6a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg></span>';
+  var MENU_SVG = '<span class="gico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></span>';
+  var guideOS = ios ? "ios" : "android", deferred = null, lastFocus = null;
+  function renderGuide() {
+    $("#g-title").textContent = tr("guideTitle");
+    $("#g-lead").textContent = tr("guideLead", { app: tr("title") });
+    ["ios", "android"].forEach(function (o) {
+      var b = $("#tab-" + o); b.textContent = tr(o === "ios" ? "tabIos" : "tabAndroid");
+      b.setAttribute("aria-selected", guideOS === o ? "true" : "false"); b.tabIndex = guideOS === o ? 0 : -1;
+    });
+    var keys = guideOS === "ios" ? ["ios1", "ios2", "ios3", "ios4"] : ["and1", "and2", "and3", "and4"];
+    $("#g-steps").innerHTML = keys.map(function (k) { return "<li><span>" + tr(k, { share: SHARE_SVG, menu: MENU_SVG }) + "</span></li>"; }).join("");
+    $("#g-desk").textContent = tr("guideDesk"); $("#g-desk").hidden = guideOS === "ios";
+    $("#g-now").textContent = tr("guideNow"); $("#g-now").hidden = !(deferred && guideOS === "android");
+    $("#g-close").textContent = tr("guideClose"); $("#g-never").textContent = tr("guideNever");
+    $("#g-langs-l").textContent = tr("langTitle");
+    $("#g-langs").innerHTML = I18N.LANGS.map(function (l) {
+      return '<button class="chip" type="button" lang="' + l.html + '" data-lang="' + l.c + '" aria-pressed="' + (l.c === I18N.lang) + '">' + esc(l.n) + "</button>";
+    }).join("");
+  }
+  function openGuide() {
+    lastFocus = document.activeElement;
+    renderGuide();
+    $("#guide").hidden = false; document.body.classList.add("lock");
+    $("#guide .gsheet").focus();
+  }
+  function closeGuide(never) {
+    if ($("#guide").hidden) return;
+    $("#guide").hidden = true; document.body.classList.remove("lock");
+    if (never) LS.set("pharma.guideHide", true);
+    try { sessionStorage.setItem("pharma.guideSeen", "1"); } catch (e) {}
+    if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (e) {} }
+  }
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault(); deferred = e; if (!ios) guideOS = "android";
+    if (!$("#guide").hidden) renderGuide();
+  });
+  window.addEventListener("appinstalled", function () {
+    deferred = null; LS.set("pharma.guideHide", true); closeGuide(false); $("#guide-open").hidden = true;
+  });
+  function initGuide() {
+    $("#guide-open").hidden = standalone;
+    $("#guide-open").addEventListener("click", openGuide);
+    $("#g-close").addEventListener("click", function () { closeGuide(false); });
+    $("#g-never").addEventListener("click", function () { closeGuide(true); });
+    $("#guide .gback").addEventListener("click", function () { closeGuide(false); });
+    $("#g-now").addEventListener("click", function () {
+      if (!deferred) return;
+      deferred.prompt();
+      deferred.userChoice.then(function () { deferred = null; renderGuide(); }, function () {});
+    });
+    $("#tab-ios").addEventListener("click", function () { guideOS = "ios"; renderGuide(); });
+    $("#tab-android").addEventListener("click", function () { guideOS = "android"; renderGuide(); });
+    var seen = false; try { seen = sessionStorage.getItem("pharma.guideSeen") === "1"; } catch (e) {}
+    if (!standalone && !LS.get("pharma.guideHide", false) && !seen) openGuide();
+  }
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      if (!$("#lang-menu").hidden) { toggleMenu(false); $("#lang-btn").focus(); }
+      else if (!$("#guide").hidden) closeGuide(false);
+      return;
+    }
+    if (e.key === "Tab" && !$("#guide").hidden) {
+      var f = qsa("#guide button:not([hidden]), #guide a[href]").filter(function (x) { return x.offsetParent !== null; });
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (!$("#guide").contains(document.activeElement) || document.activeElement === $("#guide .gsheet")) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
+      else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+
   /* ---------- démarrage ---------- */
   function boot() {
+    I18N.setLang(I18N.detect(LS.get("pharma.lang", null), navigator.languages || [navigator.language]));
+    OH.setPack(I18N.PACKS[I18N.lang] || null);
+    applyStatic(); renderLangMenu();
     fetch("data/meta.json").then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { if (j && j.built) { S.meta = j; render(); } }).catch(function () {});
     var sp = LS.get("pharma.pos", null), last = LS.get("pharma.last", null);
     if (sp && typeof sp.lat === "number" && typeof sp.lon === "number") {
-      S.pos = sp; $("#q").value = sp.label || "";
+      if (sp.label === "Ma position") sp.label = "";   /* ancien libellé figé en français */
+      S.pos = sp; syncQ();
       if (last && last.items && dist(sp, last) < 800) {
         S.items = last.items.map(function (o) { o._d = dist(sp, { lat: o.y, lon: o.x }); return o; }).sort(function (a, b) { return a._d - b._d; });
         S.radius = last.radius || 8; S.stamp = last.t;
       }
       render(); search(sp); silentLocate();
     } else render();
-    if (ios && !window.navigator.standalone && !LS.get("pharma.hideInstall", false)) {
-      $("#install").hidden = false;
-      $("#install-x").addEventListener("click", function () { $("#install").hidden = true; LS.set("pharma.hideInstall", true); });
-    }
+    initGuide();
   }
   setInterval(function () { if (document.visibilityState === "visible" && S.pos && !document.activeElement.matches("#q")) render(); }, 60000);
   document.addEventListener("visibilitychange", function () {
